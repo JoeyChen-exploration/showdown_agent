@@ -1,29 +1,41 @@
 # node pokemon-showdown start --no-security
+import argparse
 import asyncio
-import builtins
-import contextlib
-import gc
 import importlib
-import io
 import logging
 import os
 import shutil
 import sys
 import threading
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import List
 
 import poke_env as pke
 from poke_env import AccountConfiguration
 from poke_env.player.player import Player
-from tabulate import tabulate
 
 logging.basicConfig(level=logging.ERROR)
 
 # Global lock for file writing
 file_lock = threading.Lock()
+
+BOT_STYLE_ORDER = ["simple", "max_damage", "random"]
+BOT_TEAM_ORDER = ["uber", "ou", "uu", "ru", "nu"]
+MATCH_TIMEOUT_SECONDS = 90
+
+
+class RuntimeBattleErrorDetector(logging.Handler):
+    def __init__(self):
+        super().__init__(level=logging.ERROR)
+        self.triggered = False
+
+    def emit(self, record: logging.LogRecord) -> None:
+        message = record.getMessage()
+        if (
+            "Unhandled exception raised while handling message" in message
+            or "Traceback (most recent call last):" in message
+        ):
+            self.triggered = True
 
 
 def rank_players_by_victories(results_dict, top_k=10):
@@ -44,39 +56,6 @@ def rank_players_by_victories(results_dict, top_k=10):
     sorted_players = sorted(victory_scores.items(), key=lambda x: x[1], reverse=True)
 
     return sorted_players[:top_k]
-
-
-@contextlib.contextmanager
-def silence_all_output():
-    # Backup
-    old_print = builtins.print
-    old_stdout, old_stderr = sys.stdout, sys.stderr
-    old_fd_out, old_fd_err = os.dup(1), os.dup(2)
-
-    try:
-        # Kill Python-level print
-        builtins.print = lambda *a, **k: None
-        sys.stdout = open(os.devnull, "w")
-        sys.stderr = open(os.devnull, "w")
-
-        # Kill C-level / fd-level writes
-        devnull_fd = os.open(os.devnull, os.O_WRONLY)
-        os.dup2(devnull_fd, 1)
-        os.dup2(devnull_fd, 2)
-        os.close(devnull_fd)
-
-        yield
-
-    finally:
-        # Restore everything
-        builtins.print = old_print
-        sys.stdout.close()
-        sys.stderr.close()
-        sys.stdout, sys.stderr = old_stdout, old_stderr
-        os.dup2(old_fd_out, 1)
-        os.dup2(old_fd_err, 2)
-        os.close(old_fd_out)
-        os.close(old_fd_err)
 
 
 def load_module_from_file(path, name: str):
@@ -103,9 +82,8 @@ def gather_players():
 
     for module_file in player_folders.glob("*.py"):
         print(f"Loading {module_file}")
-        with silence_all_output():
-            module_name = module_file.stem
-            module = load_module_from_file(module_file, module_name)
+        module_name = module_file.stem
+        module = load_module_from_file(module_file, module_name)
 
         # Get the class
         if hasattr(module, "CustomAgent"):
@@ -132,42 +110,105 @@ def gather_players():
     return players
 
 
-def gather_bots(bot_id: int) -> List[Player]:
+def gather_players_filtered(player_names: set[str]) -> List[Player]:
+    player_folders = Path(__file__).parent / "players"
+    replay_dir = Path(__file__).parent / "replays"
+
+    players = []
+
+    if os.path.exists(replay_dir):
+        shutil.rmtree(replay_dir)
+    os.makedirs(replay_dir)
+
+    for module_file in sorted(player_folders.glob("*.py")):
+        module_name = module_file.stem
+        if module_name not in player_names:
+            continue
+
+        print(f"Loading {module_file}")
+        module = load_module_from_file(module_file, module_name)
+
+        if hasattr(module, "CustomAgent"):
+            player_name = module_name
+            agent_class = getattr(module, "CustomAgent")
+
+            agent_replay_dir = os.path.join(replay_dir, f"{player_name}")
+            if not os.path.exists(agent_replay_dir):
+                os.makedirs(agent_replay_dir)
+
+            account_config = AccountConfiguration(player_name, None)
+            player = agent_class(
+                account_configuration=account_config,
+                battle_format="gen9ubers",
+            )
+
+            player._save_replays = agent_replay_dir
+            players.append(player)
+
+    return players
+
+
+def gather_bots(bot_id_start: int = 1) -> List[Player]:
     bot_folders = Path(__file__).parent / "bots"
     bot_teams_folders = bot_folders / "teams"
 
     generic_bots = []
+    bot_id = bot_id_start
 
-    # Load all teams first
-    bot_teams = {}
-    for team_file in bot_teams_folders.glob("*.txt"):
-        with team_file.open("r", encoding="utf-8") as f:
-            bot_teams[team_file.stem] = f.read()
+    for style_name in BOT_STYLE_ORDER:
+        module_file = bot_folders / f"{style_name}.py"
+        module = load_module_from_file(module_file, style_name)
 
-    # Load all bot modules safely
-    for module_file in bot_folders.glob("*.py"):
-        module_name = module_file.stem
-        module = load_module_from_file(module_file, module_name)
+        if not hasattr(module, "CustomAgent"):
+            continue
 
-        if hasattr(module, "CustomAgent"):
-            agent_class = getattr(module, "CustomAgent")
+        agent_class = getattr(module, "CustomAgent")
 
-            for team_name, team in bot_teams.items():
-                config_name = f"{module_name}-{team_name}-{bot_id}"
-                account_config = AccountConfiguration(config_name, None)
-                generic_bots.append(
-                    agent_class(
-                        team=team,
-                        account_configuration=account_config,
-                        battle_format="gen9ubers",
-                    )
+        for team_name in BOT_TEAM_ORDER:
+            team_file = bot_teams_folders / f"{team_name}.txt"
+            with team_file.open("r", encoding="utf-8") as f:
+                team = f.read()
+
+            config_name = f"{style_name}-{team_name}-{bot_id}"
+            account_config = AccountConfiguration(config_name, None)
+            generic_bots.append(
+                agent_class(
+                    team=team,
+                    account_configuration=account_config,
+                    battle_format="gen9ubers",
                 )
+            )
+            bot_id += 1
 
     return generic_bots
 
 
 async def cross_evaluate(agents: List[Player]):
     return await pke.cross_evaluate(agents, n_challenges=3)
+
+
+async def _cross_evaluate_with_timeout(agents: List[Player], timeout_seconds: int):
+    return await asyncio.wait_for(cross_evaluate(agents), timeout=timeout_seconds)
+
+
+def evaluate_player_vs_bot(player: Player, bot: Player) -> tuple[float, bool]:
+    try:
+        # Keep each matchup isolated and bounded in runtime.
+        cross_evaluation_results = asyncio.run(
+            _cross_evaluate_with_timeout([player, bot], MATCH_TIMEOUT_SECONDS)
+        )
+        score = cross_evaluation_results[player.username][bot.username]
+        return (0.0 if score is None else score), False
+    except asyncio.TimeoutError:
+        print(
+            f"  warning: timeout after {MATCH_TIMEOUT_SECONDS}s for {player.username} vs {bot.username}; counting as loss"
+        )
+        return 0.0, True
+    except Exception as exc:
+        print(
+            f"  warning: evaluation failed for {player.username} vs {bot.username} ({type(exc).__name__}); counting as loss"
+        )
+        return 0.0, True
 
 
 def evalute_against_bots(players: List[Player]):
@@ -215,37 +256,47 @@ def safe_write(results_file, text):
             f.write(text + "\n")
 
 
-def run_tournament(players, generic_bots, results_file):
+def run_tournament(player: Player, generic_bots: List[Player], results_file: str):
+    print(f"Evaluating player: {player.username}")
 
-    for player in players:
-        agents = []
-        print(f"Evaluating player: {player.username}")
-        agents.append(player)
-        agents.extend(generic_bots)
+    bots_beaten = 0
+    runtime_error_detector = RuntimeBattleErrorDetector()
+    player_logger = logging.getLogger(player.username)
+    player_logger.addHandler(runtime_error_detector)
+    player_logger.setLevel(logging.ERROR)
 
-        agent_rankings, error = evalute_against_bots(agents)
+    try:
+        for bot in generic_bots:
+            print(f"{player.username}  vs {bot.username}: starting evaluation")
+            player_winrate, hard_failure = evaluate_player_vs_bot(player, bot)
 
-        if error:
-            print(f"Error evaluating {player.username}, skipping...")
-            safe_write(results_file, f"{player.username} #Error 0")
-            return True
+            if hard_failure or runtime_error_detector.triggered:
+                print(
+                    f"  error: runtime failure detected for {player.username}; aborting remaining matches"
+                )
+                return True
 
-        player_rank = len(agents) + 1
-        player_mark = 0.0
-        # print("Rank. Player - Win Rate - Mark")
-        for rank, (agent, winrate) in enumerate(agent_rankings, 1):
-            mark = assign_marks(rank)
+            did_beat_bot = player_winrate > 0.5
+            if did_beat_bot:
+                bots_beaten += 1
 
-            # print(f"{rank}. {agent} - {winrate:.2f} - {mark}")
-            if agent == player.username:
-                player_rank = rank
-                player_mark = mark
+            print(
+                f"  vs {bot.username}: winrate={player_winrate} {'(beat)' if did_beat_bot else ''}"
+            )
+    finally:
+        player_logger.removeHandler(runtime_error_detector)
 
-        print(f"{player.username} ranked #{player_rank} with a mark of {player_mark}\n")
+    # Rank among fixed ladder: all bots + player (e.g. 15 bots -> rank 1..16)
+    player_rank = len(generic_bots) + 1 - bots_beaten
+    player_mark = assign_marks(player_rank)
 
-        safe_write(results_file, f"{player.username} #{player_rank} {player_mark}")
+    print(
+        f"{player.username} ranked #{player_rank} with a mark of {player_mark} ({bots_beaten}/{len(generic_bots)} bots beaten)\n"
+    )
 
-        return False
+    safe_write(results_file, f"{player.username} #{player_rank} {player_mark}")
+
+    return False
 
 
 def move_file(player_name: str, success: bool):
@@ -268,9 +319,30 @@ def move_file(player_name: str, success: bool):
         print(f"⚠️ Source file not found: {src_file}")
 
 
-def main():
-    players = gather_players()
+def run_single_player(player_name: str, results_file: str) -> int:
+    players = gather_players_filtered({player_name})
+    if not players:
+        print(f"No valid player module found for {player_name}")
+        return 1
+
+    player = players[0]
     generic_bots = gather_bots(1)
+
+    print(f"Starting tournament for {player.username}")
+    had_runtime_error = run_tournament(player, generic_bots, results_file)
+    return 1 if had_runtime_error else 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Run one student agent against the fixed bot ladder."
+    )
+    parser.add_argument(
+        "--upi",
+        required=True,
+        help="Student UPI/module name from scripts/players (without .py)",
+    )
+    args = parser.parse_args()
 
     results_file = os.path.join(
         os.path.dirname(__file__), "results", "marking_results.txt"
@@ -278,10 +350,8 @@ def main():
     if not os.path.exists(os.path.dirname(results_file)):
         os.makedirs(os.path.dirname(results_file))
 
-    for player in players:
-        print(f"Starting tournament for {player.username}")
-        outcome = run_tournament([player], generic_bots, results_file)
-        move_file(player.username, not outcome)
+    upi = args.upi.removesuffix(".py")
+    return run_single_player(upi, results_file)
 
 
 if __name__ == "__main__":

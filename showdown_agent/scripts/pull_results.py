@@ -1,17 +1,15 @@
 import ast
 import importlib.util
 import os
-import re
 import shutil
-import sys
+import tempfile
 from collections import defaultdict
 from pathlib import Path
 
-import astor
-from poke_env import AccountConfiguration
+from file_write_detection import find_file_write_attempts
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-import tempfile
+from submission_sanity import validate_requirements_file, validate_submission
 
 
 class PrintAndLoggingRemover(ast.NodeTransformer):
@@ -32,6 +30,8 @@ class PrintAndLoggingRemover(ast.NodeTransformer):
 
 
 def remove_print_and_logging_from_file(file_path: Path, backup=True):
+    upi = file_path.stem  # Extract UPI from filename
+
     if backup:
         backup_path = file_path.with_suffix(file_path.suffix + ".bak")
         shutil.copy2(file_path, backup_path)
@@ -41,7 +41,7 @@ def remove_print_and_logging_from_file(file_path: Path, backup=True):
     try:
         tree = ast.parse(code)
     except SyntaxError as e:
-        print(f"⚠️ Skipping {file_path}, invalid Python: {e}")
+        print(f"⚠️ [{upi}] Skipping, invalid Python: {e}")
         return
 
     tree = PrintAndLoggingRemover().visit(tree)
@@ -57,7 +57,7 @@ def remove_print_and_logging_from_file(file_path: Path, backup=True):
         # Replace original only after success
         os.replace(tmp_path, file_path)
     except Exception as e:
-        print(f"❌ Failed on {file_path}: {e}")
+        print(f"❌ [{upi}] Failed: {e}")
         # Clean up temp file if something failed
         os.remove(tmp_path)
     finally:
@@ -67,46 +67,22 @@ def remove_print_and_logging_from_file(file_path: Path, backup=True):
 
 
 def remove_print_and_logging_from_dir(directory: str, backup=True):
-    for path in Path(directory).rglob("*.py"):
-        print(f"Processing {path}")
+    excluded_dirs = {"broken", "logging_violation", "__pycache__"}
+    paths = [
+        path
+        for path in Path(directory).rglob("*.py")
+        if not any(part in excluded_dirs for part in path.parts)
+    ]
+    paths.sort()
+
+    total = len(paths)
+    print(f"  [INFO] Stripping print/logging from {total} submissions")
+
+    for idx, path in enumerate(paths, start=1):
+        upi = path.stem
+        print(f"    [{idx}/{total}] [{upi}] Processing...", end=" ")
         remove_print_and_logging_from_file(path, backup=backup)
-
-
-def gather_players():
-    player_folders = os.path.join(os.path.dirname(__file__), "players")
-
-    broken_player_path = f"{player_folders}/broken"
-
-    for module_name in os.listdir(player_folders):
-        if module_name.endswith(".py"):
-            module_path = f"{player_folders}/{module_name}"
-
-            spec = importlib.util.spec_from_file_location(module_name, module_path)
-            module = importlib.util.module_from_spec(spec)
-
-            # f = io.StringIO()
-            # with contextlib.redirect_stdout(f):
-            sys.modules[module_name] = module
-            spec.loader.exec_module(module)
-
-            # Get the class
-            if hasattr(module, "CustomAgent"):
-                # Check if the class is a subclass of Player
-
-                player_name = f"{module_name[:-3]}"
-
-                agent_class = getattr(module, "CustomAgent")
-
-                account_config = AccountConfiguration(player_name, None)
-                try:
-                    player = agent_class(
-                        account_configuration=account_config,
-                        battle_format="gen9ubers",
-                    )
-                except Exception as e:
-                    print(f"Error creating player instance for {player_name}: {e}")
-                    print(f"Removing broken file: {module_name}")
-                    shutil.move(module_path, f"{broken_player_path}/{module_name}")
+        print("done")
 
 
 def parse_line(line):
@@ -205,21 +181,67 @@ def check_import(file_path: Path):
         return f"{type(e).__name__}: {e}"
 
 
-def filter_broken(player_path):
-    py_files = Path(player_path).glob("*.py")
-    bad_files = []
+def write_logging_violation_report(report_path: Path, upi: str, findings):
+    lines = [
+        f"Submission: {upi}.py",
+        "Reason: detected file output/create code patterns.",
+        "Findings:",
+    ]
+    lines.extend([f"- {finding}" for finding in findings])
+    report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    for file in py_files:
+
+def filter_broken(player_path, requirements_path):
+    print(f"  [filter_broken] Starting validation of {player_path}...")
+    py_files = sorted(Path(player_path).glob("*.py"))
+    bad_files = []
+    bad_file_paths = set()
+    total = len(py_files)
+
+    print(f"  Found {total} Python files to validate")
+
+    print("  [CHECK] Syntax validation...")
+    for idx, file in enumerate(py_files, start=1):
+        upi = file.stem
+        print(f"    [{idx}/{total}] [{upi}] Checking...", end=" ")
         err = check_syntax(file)
         if err:
-            print(f"Syntax error in {file}: {err}")
+            print(f"FAIL: {err}")
             bad_files.append((file, err))
+            bad_file_paths.add(file)
+            continue
+        print("OK")
+
+    print("  [CHECK] Requirements and import validation...")
+    for idx, file in enumerate(py_files, start=1):
+        if file in bad_file_paths:
             continue
 
-        err = check_import(file)
-        if err:
-            print(f"Import error in {file}: {err}")
+        upi = file.stem
+        print(f"    [{idx}/{total}] [{upi}] Validating...", end=" ")
+        req_file = Path(requirements_path) / f"{file.stem}_requirements.txt"
+        if not req_file.exists():
+            err = f"Missing requirements file for {file.stem}"
+            print(f"FAIL: {err}")
             bad_files.append((file, err))
+            bad_file_paths.add(file)
+            continue
+
+        print(f"(install+import)", end=" ")
+        validation_result = validate_submission(file, req_file)
+        if not validation_result.ok:
+            err = f"{validation_result.stage}: {validation_result.message}"
+            print(f"FAIL")
+            print(f"      Error: {err}")
+            if validation_result.stdout:
+                print(f"      stdout: {validation_result.stdout[:200]}")
+            if validation_result.stderr:
+                print(f"      stderr: {validation_result.stderr[:200]}")
+            bad_files.append((file, err))
+            bad_file_paths.add(file)
+            continue
+
+        print("OK")
 
     return bad_files
 
@@ -248,6 +270,7 @@ def main():
     # COMPSYS726 - Assignment 1 Folder
     primary_folder_id = "1CLYDBXYuLHfna8Uj4lCH4H4y6uBmJekD"
 
+    print("Fetching folder structure from Google Drive...")
     directory = read_folder(drive, "COMPSYS726 - Expert Agents", primary_folder_id)
 
     print_folders(directory)
@@ -257,10 +280,12 @@ def main():
     existing_files = {f.name for f in Path(player_path).glob("*.py")}
 
     broken_player_path = f"{player_path}/broken"
+    logging_violation_path = f"{player_path}/logging_violation"
     requirements_path = f"{player_path}/requirements"
 
     os.makedirs(requirements_path, exist_ok=True)
     os.makedirs(broken_player_path, exist_ok=True)
+    os.makedirs(logging_violation_path, exist_ok=True)
 
     print(f"Player path: {player_path}")
 
@@ -268,43 +293,79 @@ def main():
         upi = folders["title"]
 
         if f"{upi}.py" in existing_files:
-            print(f"Skipping {upi}, already exists")
+            print(f"[SKIP] {upi} already exists")
             continue
 
-        print(f"Title: {upi}")
+        print(f"[PROCESS] {upi}")
 
         files = folders["files"]
 
         if "requirements.txt" not in files or f"{upi}.py" not in files:
-            print(f"Skipping {upi}, missing files")
+            print(f"[SKIP] {upi} missing files")
             continue
 
         requirements_id = files["requirements.txt"]["id"]
         pkm_expert_id = files[f"{upi}.py"]["id"]
 
+        print(f"  [DOWNLOAD] fetching requirements and code")
         file = drive.CreateFile({"id": requirements_id})
         file.GetContentFile(f"{requirements_path}/{upi}_requirements.txt")
 
         file = drive.CreateFile({"id": pkm_expert_id})
-        file.GetContentFile(f"{player_path}/{upi}.py")
+        player_file = Path(player_path) / f"{upi}.py"
+        file.GetContentFile(str(player_file))
 
+        print(f"  [CHECK_WRITES] scanning for file write attempts")
+        write_findings = find_file_write_attempts(player_file)
+        if write_findings:
+            print(
+                f"  [VIOLATION] {upi} has file write code: moving to logging_violation"
+            )
+            for finding in write_findings:
+                print(f"    - {finding}")
+
+            violation_player_file = Path(logging_violation_path) / f"{upi}.py"
+            shutil.move(player_file, str(violation_player_file))
+
+            report_file = Path(logging_violation_path) / f"{upi}_violation.txt"
+            write_logging_violation_report(report_file, upi, write_findings)
+
+            req_file = Path(requirements_path) / f"{upi}_requirements.txt"
+            if req_file.exists():
+                shutil.move(req_file, Path(logging_violation_path) / req_file.name)
+
+            continue
+
+    print("[STAGE] Stripping print/logging statements from valid submissions...")
     remove_print_and_logging_from_dir(player_path, backup=False)
 
-    broken_files = filter_broken(player_path)
+    print("[STAGE] Validating submissions (syntax, requirements, import smoke test)...")
+    print("  [INFO] This stage validates all current submissions in players/")
+    broken_files = filter_broken(player_path, requirements_path)
     for file, _ in broken_files:
-        print(f"Removing broken file: {file}")
+        print(f"  [BROKEN] Moving {file.name} to broken/")
         shutil.move(file, f"{broken_player_path}/{file.name}")
 
-    gather_players()
+    print("[STAGE] Merging requirements files...")
+    merged_requirements = merge_all_requirements(requirements_path)
 
-    merge_all_requirements(requirements_path)
+    print("[STAGE] Validating merged requirements...")
+    merged_validation = validate_requirements_file(merged_requirements)
+    if not merged_validation.ok:
+        print(
+            f"  [WARN] Merged requirements failed validation: {merged_validation.stage}: {merged_validation.message}"
+        )
+        if merged_validation.stdout:
+            print(merged_validation.stdout)
+        if merged_validation.stderr:
+            print(merged_validation.stderr)
+    else:
+        print(
+            "  [OK] Merged requirements validated successfully in a fresh temporary environment"
+        )
+
+    print("[COMPLETE] Pull results pipeline finished.")
 
 
 if __name__ == "__main__":
-    # main()
-    player_folders = os.path.join(os.path.dirname(__file__), "players")
-
-    broken = filter_broken(f"{player_folders}/broken")
-
-    for file, err in broken:
-        print(f"{file.name}")
+    main()
