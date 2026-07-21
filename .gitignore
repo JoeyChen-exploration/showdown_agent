@@ -1,5 +1,6 @@
 __pycache__/
 venv/
+pokemon/
 # Default ignored files
 /shelf/
 /workspace.xml

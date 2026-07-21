@@ -31,6 +31,7 @@ showdown_agent/scripts/
 
 `bots/` 里三种策略（random / max_damage / simple）× 5 种队伍强度（uber/ou/uu/ru/nu），
 组合成 15 个固定难度的对手梯队，见 `expert_main.py` 里的 `BOT_STYLE_ORDER` / `BOT_TEAM_ORDER`。
+每种策略的具体决策逻辑、每档队伍强度的差异，详见 [Game_Mechanics_and_Bots.md](Game_Mechanics_and_Bots.md)。
 
 ## 要改的文件：`players/upi.py`
 
