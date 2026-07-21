@@ -9,6 +9,7 @@
 
 COMPSYS 726 课程作业：为 Pokemon Showdown（Gen9 Ubers 格式）实现一个专家系统智能体，
 对战内置的分级 bot 梯队拿分。禁止使用机器学习——必须是基于规则/知识的专家系统。
+完整背景、评分机制、提交流程见 [Project_Analysis.md](Project_Analysis.md)。
 
 ## 技术栈
 
