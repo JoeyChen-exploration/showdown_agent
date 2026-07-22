@@ -1,0 +1,695 @@
+battle_tag,opponent_username,won,turn,event
+battle-gen9ubers-1723,simple-uu-99902,True,0,|init|battle
+battle-gen9ubers-1723,simple-uu-99902,True,0,|title|wche652a999 vs. simple-uu-99902
+battle-gen9ubers-1723,simple-uu-99902,True,0,|j|☆wche652a999
+battle-gen9ubers-1723,simple-uu-99902,True,0,|j|☆simple-uu-99902
+battle-gen9ubers-1723,simple-uu-99902,True,0,|gametype|singles
+battle-gen9ubers-1723,simple-uu-99902,True,0,|player|p1|wche652a999|102|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|player|p2|simple-uu-99902|101|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|gen|9
+battle-gen9ubers-1723,simple-uu-99902,True,0,|tier|[Gen 9] Ubers
+battle-gen9ubers-1723,simple-uu-99902,True,0,|rule|HP Percentage Mod: HP is shown in percentages
+battle-gen9ubers-1723,simple-uu-99902,True,0,|rule|Endless Battle Clause: Forcing endless battles is banned
+battle-gen9ubers-1723,simple-uu-99902,True,0,|rule|Sleep Clause Mod: Limit one foe put to sleep
+battle-gen9ubers-1723,simple-uu-99902,True,0,|rule|Species Clause: Limit one of each Pokémon
+battle-gen9ubers-1723,simple-uu-99902,True,0,|rule|OHKO Clause: OHKO moves are banned
+battle-gen9ubers-1723,simple-uu-99902,True,0,|rule|Evasion Items Clause: Evasion items are banned
+battle-gen9ubers-1723,simple-uu-99902,True,0,|rule|Evasion Moves Clause: Evasion moves are banned
+battle-gen9ubers-1723,simple-uu-99902,True,0,|clearpoke
+battle-gen9ubers-1723,simple-uu-99902,True,0,"|poke|p1|Ribombee, F|"
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p1|Koraidon|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p1|Arceus-Ghost|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p1|Zacian-*|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p1|Eternatus|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p1|Kyogre|
+battle-gen9ubers-1723,simple-uu-99902,True,0,"|poke|p2|Tornadus-Therian, M|"
+battle-gen9ubers-1723,simple-uu-99902,True,0,"|poke|p2|Clodsire, F|"
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p2|Metagross|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p2|Rotom-Wash|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p2|Cobalion|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|poke|p2|Zarude-Dada|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|teampreview
+battle-gen9ubers-1723,simple-uu-99902,True,0,|
+battle-gen9ubers-1723,simple-uu-99902,True,0,|teamsize|p1|6
+battle-gen9ubers-1723,simple-uu-99902,True,0,|teamsize|p2|6
+battle-gen9ubers-1723,simple-uu-99902,True,0,|start
+battle-gen9ubers-1723,simple-uu-99902,True,0,"|switch|p1a: Ribombee|Ribombee, F|261/261"
+battle-gen9ubers-1723,simple-uu-99902,True,0,|switch|p2a: Rotom|Rotom-Wash|100/100
+battle-gen9ubers-1723,simple-uu-99902,True,0,|turn|1
+battle-gen9ubers-1723,simple-uu-99902,True,1,|
+battle-gen9ubers-1723,simple-uu-99902,True,1,|move|p1a: Ribombee|Sticky Web|p2a: Rotom
+battle-gen9ubers-1723,simple-uu-99902,True,1,|-sidestart|p2: simple-uu-99902|move: Sticky Web
+battle-gen9ubers-1723,simple-uu-99902,True,1,|move|p2a: Rotom|Hydro Pump|p1a: Ribombee|[miss]
+battle-gen9ubers-1723,simple-uu-99902,True,1,|-miss|p2a: Rotom|p1a: Ribombee
+battle-gen9ubers-1723,simple-uu-99902,True,1,|
+battle-gen9ubers-1723,simple-uu-99902,True,1,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,1,|turn|2
+battle-gen9ubers-1723,simple-uu-99902,True,2,|
+battle-gen9ubers-1723,simple-uu-99902,True,2,|move|p1a: Ribombee|Stun Spore|p2a: Rotom
+battle-gen9ubers-1723,simple-uu-99902,True,2,|-immune|p2a: Rotom
+battle-gen9ubers-1723,simple-uu-99902,True,2,|move|p2a: Rotom|Hydro Pump|p1a: Ribombee|[miss]
+battle-gen9ubers-1723,simple-uu-99902,True,2,|-miss|p2a: Rotom|p1a: Ribombee
+battle-gen9ubers-1723,simple-uu-99902,True,2,|
+battle-gen9ubers-1723,simple-uu-99902,True,2,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,2,|turn|3
+battle-gen9ubers-1723,simple-uu-99902,True,3,|
+battle-gen9ubers-1723,simple-uu-99902,True,3,|move|p1a: Ribombee|Moonblast|p2a: Rotom
+battle-gen9ubers-1723,simple-uu-99902,True,3,|-damage|p2a: Rotom|64/100
+battle-gen9ubers-1723,simple-uu-99902,True,3,|move|p2a: Rotom|Hydro Pump|p1a: Ribombee
+battle-gen9ubers-1723,simple-uu-99902,True,3,|-damage|p1a: Ribombee|81/261
+battle-gen9ubers-1723,simple-uu-99902,True,3,|
+battle-gen9ubers-1723,simple-uu-99902,True,3,|-heal|p2a: Rotom|69/100|[from] item: Leftovers
+battle-gen9ubers-1723,simple-uu-99902,True,3,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,3,|turn|4
+battle-gen9ubers-1723,simple-uu-99902,True,4,|
+battle-gen9ubers-1723,simple-uu-99902,True,4,|move|p1a: Ribombee|Moonblast|p2a: Rotom
+battle-gen9ubers-1723,simple-uu-99902,True,4,|-damage|p2a: Rotom|35/100
+battle-gen9ubers-1723,simple-uu-99902,True,4,|-unboost|p2a: Rotom|spa|1
+battle-gen9ubers-1723,simple-uu-99902,True,4,|move|p2a: Rotom|Hydro Pump|p1a: Ribombee
+battle-gen9ubers-1723,simple-uu-99902,True,4,|-damage|p1a: Ribombee|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,4,|faint|p1a: Ribombee
+battle-gen9ubers-1723,simple-uu-99902,True,4,|
+battle-gen9ubers-1723,simple-uu-99902,True,4,|-heal|p2a: Rotom|41/100|[from] item: Leftovers
+battle-gen9ubers-1723,simple-uu-99902,True,4,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,4,|
+battle-gen9ubers-1723,simple-uu-99902,True,4,|switch|p1a: Eternatus|Eternatus|421/421
+battle-gen9ubers-1723,simple-uu-99902,True,4,|-ability|p1a: Eternatus|Pressure
+battle-gen9ubers-1723,simple-uu-99902,True,4,|turn|5
+battle-gen9ubers-1723,simple-uu-99902,True,5,|
+battle-gen9ubers-1723,simple-uu-99902,True,5,|move|p1a: Eternatus|Dynamax Cannon|p2a: Rotom
+battle-gen9ubers-1723,simple-uu-99902,True,5,|-damage|p2a: Rotom|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,5,|faint|p2a: Rotom
+battle-gen9ubers-1723,simple-uu-99902,True,5,|
+battle-gen9ubers-1723,simple-uu-99902,True,5,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,5,|
+battle-gen9ubers-1723,simple-uu-99902,True,5,|switch|p2a: Metagross|Metagross|100/100
+battle-gen9ubers-1723,simple-uu-99902,True,5,|-activate|p2a: Metagross|move: Sticky Web
+battle-gen9ubers-1723,simple-uu-99902,True,5,|-fail|p2a: Metagross|unboost|[from] ability: Clear Body|[of] p2a: Metagross
+battle-gen9ubers-1723,simple-uu-99902,True,5,|turn|6
+battle-gen9ubers-1723,simple-uu-99902,True,6,|
+battle-gen9ubers-1723,simple-uu-99902,True,6,|move|p1a: Eternatus|Fire Blast|p2a: Metagross
+battle-gen9ubers-1723,simple-uu-99902,True,6,|-supereffective|p2a: Metagross
+battle-gen9ubers-1723,simple-uu-99902,True,6,|-damage|p2a: Metagross|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,6,|faint|p2a: Metagross
+battle-gen9ubers-1723,simple-uu-99902,True,6,|
+battle-gen9ubers-1723,simple-uu-99902,True,6,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,6,|
+battle-gen9ubers-1723,simple-uu-99902,True,6,"|switch|p2a: Clodsire|Clodsire, F|100/100"
+battle-gen9ubers-1723,simple-uu-99902,True,6,|turn|7
+battle-gen9ubers-1723,simple-uu-99902,True,7,|
+battle-gen9ubers-1723,simple-uu-99902,True,7,|switch|p1a: Kyogre|Kyogre|376/376
+battle-gen9ubers-1723,simple-uu-99902,True,7,|-weather|RainDance|[from] ability: Drizzle|[of] p1a: Kyogre
+battle-gen9ubers-1723,simple-uu-99902,True,7,|move|p2a: Clodsire|Spikes|p1a: Kyogre
+battle-gen9ubers-1723,simple-uu-99902,True,7,|-sidestart|p1: wche652a999|Spikes
+battle-gen9ubers-1723,simple-uu-99902,True,7,|
+battle-gen9ubers-1723,simple-uu-99902,True,7,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,7,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,7,|turn|8
+battle-gen9ubers-1723,simple-uu-99902,True,8,|
+battle-gen9ubers-1723,simple-uu-99902,True,8,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1723,simple-uu-99902,True,8,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1723,simple-uu-99902,True,8,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1723,simple-uu-99902,True,8,|-damage|p1a: Kyogre|279/376
+battle-gen9ubers-1723,simple-uu-99902,True,8,|
+battle-gen9ubers-1723,simple-uu-99902,True,8,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,8,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,8,|turn|9
+battle-gen9ubers-1723,simple-uu-99902,True,9,|
+battle-gen9ubers-1723,simple-uu-99902,True,9,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1723,simple-uu-99902,True,9,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1723,simple-uu-99902,True,9,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1723,simple-uu-99902,True,9,|-damage|p1a: Kyogre|185/376
+battle-gen9ubers-1723,simple-uu-99902,True,9,|
+battle-gen9ubers-1723,simple-uu-99902,True,9,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,9,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,9,|turn|10
+battle-gen9ubers-1723,simple-uu-99902,True,10,|
+battle-gen9ubers-1723,simple-uu-99902,True,10,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1723,simple-uu-99902,True,10,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1723,simple-uu-99902,True,10,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1723,simple-uu-99902,True,10,|-damage|p1a: Kyogre|76/376
+battle-gen9ubers-1723,simple-uu-99902,True,10,|
+battle-gen9ubers-1723,simple-uu-99902,True,10,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,10,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,10,|turn|11
+battle-gen9ubers-1723,simple-uu-99902,True,11,|
+battle-gen9ubers-1723,simple-uu-99902,True,11,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1723,simple-uu-99902,True,11,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1723,simple-uu-99902,True,11,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1723,simple-uu-99902,True,11,|-damage|p1a: Kyogre|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,11,|faint|p1a: Kyogre
+battle-gen9ubers-1723,simple-uu-99902,True,11,|
+battle-gen9ubers-1723,simple-uu-99902,True,11,|-weather|none
+battle-gen9ubers-1723,simple-uu-99902,True,11,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,11,|
+battle-gen9ubers-1723,simple-uu-99902,True,11,|switch|p1a: Koraidon|Koraidon|341/341
+battle-gen9ubers-1723,simple-uu-99902,True,11,|-damage|p1a: Koraidon|299/341|[from] Spikes
+battle-gen9ubers-1723,simple-uu-99902,True,11,|-weather|SunnyDay|[from] ability: Orichalcum Pulse|[of] p1a: Koraidon
+battle-gen9ubers-1723,simple-uu-99902,True,11,|-activate|p1a: Koraidon|Orichalcum Pulse|[source]
+battle-gen9ubers-1723,simple-uu-99902,True,11,|turn|12
+battle-gen9ubers-1723,simple-uu-99902,True,12,|
+battle-gen9ubers-1723,simple-uu-99902,True,12,|move|p1a: Koraidon|Flare Blitz|p2a: Clodsire
+battle-gen9ubers-1723,simple-uu-99902,True,12,|-damage|p2a: Clodsire|12/100
+battle-gen9ubers-1723,simple-uu-99902,True,12,|-status|p2a: Clodsire|brn
+battle-gen9ubers-1723,simple-uu-99902,True,12,|-damage|p1a: Koraidon|164/341|[from] Recoil
+battle-gen9ubers-1723,simple-uu-99902,True,12,|move|p2a: Clodsire|Earthquake|p1a: Koraidon
+battle-gen9ubers-1723,simple-uu-99902,True,12,|-damage|p1a: Koraidon|125/341
+battle-gen9ubers-1723,simple-uu-99902,True,12,|
+battle-gen9ubers-1723,simple-uu-99902,True,12,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,12,|-damage|p2a: Clodsire|6/100 brn|[from] brn
+battle-gen9ubers-1723,simple-uu-99902,True,12,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,12,|turn|13
+battle-gen9ubers-1723,simple-uu-99902,True,13,|
+battle-gen9ubers-1723,simple-uu-99902,True,13,|move|p1a: Koraidon|Scale Shot|p2a: Clodsire
+battle-gen9ubers-1723,simple-uu-99902,True,13,|-damage|p2a: Clodsire|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,13,|faint|p2a: Clodsire
+battle-gen9ubers-1723,simple-uu-99902,True,13,|-hitcount|p2: Clodsire|1
+battle-gen9ubers-1723,simple-uu-99902,True,13,|-unboost|p1a: Koraidon|def|1
+battle-gen9ubers-1723,simple-uu-99902,True,13,|-boost|p1a: Koraidon|spe|1
+battle-gen9ubers-1723,simple-uu-99902,True,13,|
+battle-gen9ubers-1723,simple-uu-99902,True,13,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,13,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,13,|
+battle-gen9ubers-1723,simple-uu-99902,True,13,"|switch|p2a: Tornadus|Tornadus-Therian, M|100/100"
+battle-gen9ubers-1723,simple-uu-99902,True,13,|turn|14
+battle-gen9ubers-1723,simple-uu-99902,True,14,|
+battle-gen9ubers-1723,simple-uu-99902,True,14,|switch|p1a: Eternatus|Eternatus|421/421
+battle-gen9ubers-1723,simple-uu-99902,True,14,|-damage|p1a: Eternatus|369/421|[from] Spikes
+battle-gen9ubers-1723,simple-uu-99902,True,14,|-ability|p1a: Eternatus|Pressure
+battle-gen9ubers-1723,simple-uu-99902,True,14,|move|p2a: Tornadus|Hurricane|p1a: Eternatus|[miss]
+battle-gen9ubers-1723,simple-uu-99902,True,14,|-miss|p2a: Tornadus|p1a: Eternatus
+battle-gen9ubers-1723,simple-uu-99902,True,14,|
+battle-gen9ubers-1723,simple-uu-99902,True,14,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,14,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,14,|turn|15
+battle-gen9ubers-1723,simple-uu-99902,True,15,|
+battle-gen9ubers-1723,simple-uu-99902,True,15,|move|p2a: Tornadus|Hurricane|p1a: Eternatus|[miss]
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-miss|p2a: Tornadus|p1a: Eternatus
+battle-gen9ubers-1723,simple-uu-99902,True,15,|move|p1a: Eternatus|Meteor Beam||[still]
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-prepare|p1a: Eternatus|Meteor Beam
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-boost|p1a: Eternatus|spa|1
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-enditem|p1a: Eternatus|Power Herb
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-anim|p1a: Eternatus|Meteor Beam|p2a: Tornadus
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-supereffective|p2a: Tornadus
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-damage|p2a: Tornadus|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,15,|faint|p2a: Tornadus
+battle-gen9ubers-1723,simple-uu-99902,True,15,|
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1723,simple-uu-99902,True,15,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,15,|
+battle-gen9ubers-1723,simple-uu-99902,True,15,|switch|p2a: Cobalion|Cobalion|100/100
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-activate|p2a: Cobalion|move: Sticky Web
+battle-gen9ubers-1723,simple-uu-99902,True,15,|-unboost|p2a: Cobalion|spe|1
+battle-gen9ubers-1723,simple-uu-99902,True,15,|turn|16
+battle-gen9ubers-1723,simple-uu-99902,True,16,|
+battle-gen9ubers-1723,simple-uu-99902,True,16,|move|p1a: Eternatus|Fire Blast|p2a: Cobalion
+battle-gen9ubers-1723,simple-uu-99902,True,16,|-supereffective|p2a: Cobalion
+battle-gen9ubers-1723,simple-uu-99902,True,16,|-damage|p2a: Cobalion|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,16,|faint|p2a: Cobalion
+battle-gen9ubers-1723,simple-uu-99902,True,16,|
+battle-gen9ubers-1723,simple-uu-99902,True,16,|-weather|none
+battle-gen9ubers-1723,simple-uu-99902,True,16,|upkeep
+battle-gen9ubers-1723,simple-uu-99902,True,16,|
+battle-gen9ubers-1723,simple-uu-99902,True,16,|switch|p2a: Zarude|Zarude-Dada|100/100
+battle-gen9ubers-1723,simple-uu-99902,True,16,|turn|17
+battle-gen9ubers-1723,simple-uu-99902,True,17,|
+battle-gen9ubers-1723,simple-uu-99902,True,17,|move|p1a: Eternatus|Sludge Bomb|p2a: Zarude
+battle-gen9ubers-1723,simple-uu-99902,True,17,|-supereffective|p2a: Zarude
+battle-gen9ubers-1723,simple-uu-99902,True,17,|-damage|p2a: Zarude|0 fnt
+battle-gen9ubers-1723,simple-uu-99902,True,17,|faint|p2a: Zarude
+battle-gen9ubers-1723,simple-uu-99902,True,17,|
+battle-gen9ubers-1723,simple-uu-99902,True,17,|deinit
+battle-gen9ubers-1724,simple-uu-99902,True,0,|init|battle
+battle-gen9ubers-1724,simple-uu-99902,True,0,|title|wche652a999 vs. simple-uu-99902
+battle-gen9ubers-1724,simple-uu-99902,True,0,|j|☆wche652a999
+battle-gen9ubers-1724,simple-uu-99902,True,0,|j|☆simple-uu-99902
+battle-gen9ubers-1724,simple-uu-99902,True,0,|gametype|singles
+battle-gen9ubers-1724,simple-uu-99902,True,0,|player|p1|wche652a999|102|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|player|p2|simple-uu-99902|101|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|gen|9
+battle-gen9ubers-1724,simple-uu-99902,True,0,|tier|[Gen 9] Ubers
+battle-gen9ubers-1724,simple-uu-99902,True,0,|rule|HP Percentage Mod: HP is shown in percentages
+battle-gen9ubers-1724,simple-uu-99902,True,0,|rule|Endless Battle Clause: Forcing endless battles is banned
+battle-gen9ubers-1724,simple-uu-99902,True,0,|rule|Sleep Clause Mod: Limit one foe put to sleep
+battle-gen9ubers-1724,simple-uu-99902,True,0,|rule|Species Clause: Limit one of each Pokémon
+battle-gen9ubers-1724,simple-uu-99902,True,0,|rule|OHKO Clause: OHKO moves are banned
+battle-gen9ubers-1724,simple-uu-99902,True,0,|rule|Evasion Items Clause: Evasion items are banned
+battle-gen9ubers-1724,simple-uu-99902,True,0,|rule|Evasion Moves Clause: Evasion moves are banned
+battle-gen9ubers-1724,simple-uu-99902,True,0,|clearpoke
+battle-gen9ubers-1724,simple-uu-99902,True,0,"|poke|p1|Ribombee, F|"
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p1|Koraidon|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p1|Arceus-Ghost|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p1|Zacian-*|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p1|Eternatus|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p1|Kyogre|
+battle-gen9ubers-1724,simple-uu-99902,True,0,"|poke|p2|Tornadus-Therian, M|"
+battle-gen9ubers-1724,simple-uu-99902,True,0,"|poke|p2|Clodsire, M|"
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p2|Metagross|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p2|Rotom-Wash|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p2|Cobalion|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|poke|p2|Zarude-Dada|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|teampreview
+battle-gen9ubers-1724,simple-uu-99902,True,0,|
+battle-gen9ubers-1724,simple-uu-99902,True,0,|teamsize|p1|6
+battle-gen9ubers-1724,simple-uu-99902,True,0,|teamsize|p2|6
+battle-gen9ubers-1724,simple-uu-99902,True,0,|start
+battle-gen9ubers-1724,simple-uu-99902,True,0,"|switch|p1a: Ribombee|Ribombee, F|261/261"
+battle-gen9ubers-1724,simple-uu-99902,True,0,|switch|p2a: Zarude|Zarude-Dada|100/100
+battle-gen9ubers-1724,simple-uu-99902,True,0,|turn|1
+battle-gen9ubers-1724,simple-uu-99902,True,1,|
+battle-gen9ubers-1724,simple-uu-99902,True,1,"|switch|p2a: Clodsire|Clodsire, M|100/100"
+battle-gen9ubers-1724,simple-uu-99902,True,1,|move|p1a: Ribombee|Sticky Web|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,1,|-sidestart|p2: simple-uu-99902|move: Sticky Web
+battle-gen9ubers-1724,simple-uu-99902,True,1,|
+battle-gen9ubers-1724,simple-uu-99902,True,1,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,1,|turn|2
+battle-gen9ubers-1724,simple-uu-99902,True,2,|
+battle-gen9ubers-1724,simple-uu-99902,True,2,|move|p1a: Ribombee|U-turn|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,2,|-resisted|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,2,|-damage|p2a: Clodsire|94/100
+battle-gen9ubers-1724,simple-uu-99902,True,2,|
+battle-gen9ubers-1724,simple-uu-99902,True,2,|switch|p1a: Kyogre|Kyogre|376/376|[from] U-turn
+battle-gen9ubers-1724,simple-uu-99902,True,2,|-weather|RainDance|[from] ability: Drizzle|[of] p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,2,|move|p2a: Clodsire|Spikes|p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,2,|-sidestart|p1: wche652a999|Spikes
+battle-gen9ubers-1724,simple-uu-99902,True,2,|
+battle-gen9ubers-1724,simple-uu-99902,True,2,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,2,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,2,|turn|3
+battle-gen9ubers-1724,simple-uu-99902,True,3,|
+battle-gen9ubers-1724,simple-uu-99902,True,3,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,3,|-heal|p2a: Clodsire|100/100|[from] ability: Water Absorb|[of] p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,3,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,3,|-damage|p1a: Kyogre|279/376
+battle-gen9ubers-1724,simple-uu-99902,True,3,|
+battle-gen9ubers-1724,simple-uu-99902,True,3,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,3,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,3,|turn|4
+battle-gen9ubers-1724,simple-uu-99902,True,4,|
+battle-gen9ubers-1724,simple-uu-99902,True,4,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,4,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1724,simple-uu-99902,True,4,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,4,|-damage|p1a: Kyogre|182/376
+battle-gen9ubers-1724,simple-uu-99902,True,4,|
+battle-gen9ubers-1724,simple-uu-99902,True,4,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,4,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,4,|turn|5
+battle-gen9ubers-1724,simple-uu-99902,True,5,|
+battle-gen9ubers-1724,simple-uu-99902,True,5,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,5,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1724,simple-uu-99902,True,5,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,5,|-damage|p1a: Kyogre|89/376
+battle-gen9ubers-1724,simple-uu-99902,True,5,|
+battle-gen9ubers-1724,simple-uu-99902,True,5,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,5,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,5,|turn|6
+battle-gen9ubers-1724,simple-uu-99902,True,6,|
+battle-gen9ubers-1724,simple-uu-99902,True,6,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,6,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1724,simple-uu-99902,True,6,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,6,|-damage|p1a: Kyogre|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,6,|faint|p1a: Kyogre
+battle-gen9ubers-1724,simple-uu-99902,True,6,|
+battle-gen9ubers-1724,simple-uu-99902,True,6,|-weather|none
+battle-gen9ubers-1724,simple-uu-99902,True,6,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,6,|
+battle-gen9ubers-1724,simple-uu-99902,True,6,|switch|p1a: Koraidon|Koraidon|341/341
+battle-gen9ubers-1724,simple-uu-99902,True,6,|-damage|p1a: Koraidon|299/341|[from] Spikes
+battle-gen9ubers-1724,simple-uu-99902,True,6,|-weather|SunnyDay|[from] ability: Orichalcum Pulse|[of] p1a: Koraidon
+battle-gen9ubers-1724,simple-uu-99902,True,6,|-activate|p1a: Koraidon|Orichalcum Pulse|[source]
+battle-gen9ubers-1724,simple-uu-99902,True,6,|turn|7
+battle-gen9ubers-1724,simple-uu-99902,True,7,|
+battle-gen9ubers-1724,simple-uu-99902,True,7,|move|p1a: Koraidon|Flare Blitz|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,7,|-damage|p2a: Clodsire|22/100
+battle-gen9ubers-1724,simple-uu-99902,True,7,|-damage|p1a: Koraidon|179/341|[from] Recoil
+battle-gen9ubers-1724,simple-uu-99902,True,7,|move|p2a: Clodsire|Earthquake|p1a: Koraidon
+battle-gen9ubers-1724,simple-uu-99902,True,7,|-damage|p1a: Koraidon|92/341
+battle-gen9ubers-1724,simple-uu-99902,True,7,|
+battle-gen9ubers-1724,simple-uu-99902,True,7,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,7,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,7,|turn|8
+battle-gen9ubers-1724,simple-uu-99902,True,8,|
+battle-gen9ubers-1724,simple-uu-99902,True,8,|move|p1a: Koraidon|Flare Blitz|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,8,|-damage|p2a: Clodsire|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,8,|faint|p2a: Clodsire
+battle-gen9ubers-1724,simple-uu-99902,True,8,|-damage|p1a: Koraidon|59/341|[from] Recoil
+battle-gen9ubers-1724,simple-uu-99902,True,8,|
+battle-gen9ubers-1724,simple-uu-99902,True,8,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,8,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,8,|
+battle-gen9ubers-1724,simple-uu-99902,True,8,"|switch|p2a: Tornadus|Tornadus-Therian, M|100/100"
+battle-gen9ubers-1724,simple-uu-99902,True,8,|turn|9
+battle-gen9ubers-1724,simple-uu-99902,True,9,|
+battle-gen9ubers-1724,simple-uu-99902,True,9,|switch|p1a: Eternatus|Eternatus|421/421
+battle-gen9ubers-1724,simple-uu-99902,True,9,|-damage|p1a: Eternatus|369/421|[from] Spikes
+battle-gen9ubers-1724,simple-uu-99902,True,9,|-ability|p1a: Eternatus|Pressure
+battle-gen9ubers-1724,simple-uu-99902,True,9,|move|p2a: Tornadus|Hurricane|p1a: Eternatus|[miss]
+battle-gen9ubers-1724,simple-uu-99902,True,9,|-miss|p2a: Tornadus|p1a: Eternatus
+battle-gen9ubers-1724,simple-uu-99902,True,9,|
+battle-gen9ubers-1724,simple-uu-99902,True,9,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,9,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,9,|turn|10
+battle-gen9ubers-1724,simple-uu-99902,True,10,|
+battle-gen9ubers-1724,simple-uu-99902,True,10,|move|p2a: Tornadus|Hurricane|p1a: Eternatus|[miss]
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-miss|p2a: Tornadus|p1a: Eternatus
+battle-gen9ubers-1724,simple-uu-99902,True,10,|move|p1a: Eternatus|Meteor Beam||[still]
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-prepare|p1a: Eternatus|Meteor Beam
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-boost|p1a: Eternatus|spa|1
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-enditem|p1a: Eternatus|Power Herb
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-anim|p1a: Eternatus|Meteor Beam|p2a: Tornadus
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-supereffective|p2a: Tornadus
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-damage|p2a: Tornadus|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,10,|faint|p2a: Tornadus
+battle-gen9ubers-1724,simple-uu-99902,True,10,|
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1724,simple-uu-99902,True,10,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,10,|
+battle-gen9ubers-1724,simple-uu-99902,True,10,|switch|p2a: Metagross|Metagross|100/100
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-activate|p2a: Metagross|move: Sticky Web
+battle-gen9ubers-1724,simple-uu-99902,True,10,|-fail|p2a: Metagross|unboost|[from] ability: Clear Body|[of] p2a: Metagross
+battle-gen9ubers-1724,simple-uu-99902,True,10,|turn|11
+battle-gen9ubers-1724,simple-uu-99902,True,11,|
+battle-gen9ubers-1724,simple-uu-99902,True,11,|move|p1a: Eternatus|Fire Blast|p2a: Metagross
+battle-gen9ubers-1724,simple-uu-99902,True,11,|-supereffective|p2a: Metagross
+battle-gen9ubers-1724,simple-uu-99902,True,11,|-damage|p2a: Metagross|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,11,|faint|p2a: Metagross
+battle-gen9ubers-1724,simple-uu-99902,True,11,|
+battle-gen9ubers-1724,simple-uu-99902,True,11,|-weather|none
+battle-gen9ubers-1724,simple-uu-99902,True,11,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,11,|
+battle-gen9ubers-1724,simple-uu-99902,True,11,|switch|p2a: Cobalion|Cobalion|100/100
+battle-gen9ubers-1724,simple-uu-99902,True,11,|-activate|p2a: Cobalion|move: Sticky Web
+battle-gen9ubers-1724,simple-uu-99902,True,11,|-unboost|p2a: Cobalion|spe|1
+battle-gen9ubers-1724,simple-uu-99902,True,11,|turn|12
+battle-gen9ubers-1724,simple-uu-99902,True,12,|
+battle-gen9ubers-1724,simple-uu-99902,True,12,|move|p1a: Eternatus|Fire Blast|p2a: Cobalion
+battle-gen9ubers-1724,simple-uu-99902,True,12,|-supereffective|p2a: Cobalion
+battle-gen9ubers-1724,simple-uu-99902,True,12,|-damage|p2a: Cobalion|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,12,|faint|p2a: Cobalion
+battle-gen9ubers-1724,simple-uu-99902,True,12,|
+battle-gen9ubers-1724,simple-uu-99902,True,12,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,12,|
+battle-gen9ubers-1724,simple-uu-99902,True,12,|switch|p2a: Rotom|Rotom-Wash|100/100
+battle-gen9ubers-1724,simple-uu-99902,True,12,|turn|13
+battle-gen9ubers-1724,simple-uu-99902,True,13,|
+battle-gen9ubers-1724,simple-uu-99902,True,13,|move|p1a: Eternatus|Dynamax Cannon|p2a: Rotom
+battle-gen9ubers-1724,simple-uu-99902,True,13,|-damage|p2a: Rotom|27/100
+battle-gen9ubers-1724,simple-uu-99902,True,13,|move|p2a: Rotom|Hydro Pump|p1a: Eternatus
+battle-gen9ubers-1724,simple-uu-99902,True,13,|-resisted|p1a: Eternatus
+battle-gen9ubers-1724,simple-uu-99902,True,13,|-damage|p1a: Eternatus|293/421
+battle-gen9ubers-1724,simple-uu-99902,True,13,|
+battle-gen9ubers-1724,simple-uu-99902,True,13,|-heal|p2a: Rotom|33/100|[from] item: Leftovers
+battle-gen9ubers-1724,simple-uu-99902,True,13,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,13,|turn|14
+battle-gen9ubers-1724,simple-uu-99902,True,14,|
+battle-gen9ubers-1724,simple-uu-99902,True,14,|move|p1a: Eternatus|Dynamax Cannon|p2a: Rotom
+battle-gen9ubers-1724,simple-uu-99902,True,14,|-damage|p2a: Rotom|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,14,|faint|p2a: Rotom
+battle-gen9ubers-1724,simple-uu-99902,True,14,|
+battle-gen9ubers-1724,simple-uu-99902,True,14,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,14,|
+battle-gen9ubers-1724,simple-uu-99902,True,14,|switch|p2a: Zarude|Zarude-Dada|100/100
+battle-gen9ubers-1724,simple-uu-99902,True,14,|turn|15
+battle-gen9ubers-1724,simple-uu-99902,True,15,|
+battle-gen9ubers-1724,simple-uu-99902,True,15,"|switch|p1a: Ribombee|Ribombee, F|261/261"
+battle-gen9ubers-1724,simple-uu-99902,True,15,|-damage|p1a: Ribombee|229/261|[from] Spikes
+battle-gen9ubers-1724,simple-uu-99902,True,15,|move|p2a: Zarude|Knock Off|p1a: Ribombee
+battle-gen9ubers-1724,simple-uu-99902,True,15,|-resisted|p1a: Ribombee
+battle-gen9ubers-1724,simple-uu-99902,True,15,|-damage|p1a: Ribombee|115/261
+battle-gen9ubers-1724,simple-uu-99902,True,15,|-enditem|p1a: Ribombee|Focus Sash|[from] move: Knock Off|[of] p2a: Zarude
+battle-gen9ubers-1724,simple-uu-99902,True,15,|
+battle-gen9ubers-1724,simple-uu-99902,True,15,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,15,|turn|16
+battle-gen9ubers-1724,simple-uu-99902,True,16,|
+battle-gen9ubers-1724,simple-uu-99902,True,16,|move|p1a: Ribombee|U-turn|p2a: Zarude
+battle-gen9ubers-1724,simple-uu-99902,True,16,|-supereffective|p2a: Zarude
+battle-gen9ubers-1724,simple-uu-99902,True,16,|-damage|p2a: Zarude|51/100
+battle-gen9ubers-1724,simple-uu-99902,True,16,|
+battle-gen9ubers-1724,simple-uu-99902,True,16,|switch|p1a: Zacian|Zacian-Crowned|325/325|[from] U-turn
+battle-gen9ubers-1724,simple-uu-99902,True,16,|-damage|p1a: Zacian|285/325|[from] Spikes
+battle-gen9ubers-1724,simple-uu-99902,True,16,|-ability|p1a: Zacian|Intrepid Sword|boost
+battle-gen9ubers-1724,simple-uu-99902,True,16,|-boost|p1a: Zacian|atk|1
+battle-gen9ubers-1724,simple-uu-99902,True,16,|move|p2a: Zarude|Power Whip|p1a: Zacian
+battle-gen9ubers-1724,simple-uu-99902,True,16,|-resisted|p1a: Zacian
+battle-gen9ubers-1724,simple-uu-99902,True,16,|-damage|p1a: Zacian|203/325
+battle-gen9ubers-1724,simple-uu-99902,True,16,|
+battle-gen9ubers-1724,simple-uu-99902,True,16,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,16,|turn|17
+battle-gen9ubers-1724,simple-uu-99902,True,17,|
+battle-gen9ubers-1724,simple-uu-99902,True,17,"|switch|p1a: Ribombee|Ribombee, F|115/261"
+battle-gen9ubers-1724,simple-uu-99902,True,17,|-damage|p1a: Ribombee|83/261|[from] Spikes
+battle-gen9ubers-1724,simple-uu-99902,True,17,|move|p2a: Zarude|Power Whip|p1a: Ribombee
+battle-gen9ubers-1724,simple-uu-99902,True,17,|-resisted|p1a: Ribombee
+battle-gen9ubers-1724,simple-uu-99902,True,17,|-damage|p1a: Ribombee|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,17,|faint|p1a: Ribombee
+battle-gen9ubers-1724,simple-uu-99902,True,17,|
+battle-gen9ubers-1724,simple-uu-99902,True,17,|upkeep
+battle-gen9ubers-1724,simple-uu-99902,True,17,|
+battle-gen9ubers-1724,simple-uu-99902,True,17,|switch|p1a: Zacian|Zacian-Crowned|203/325
+battle-gen9ubers-1724,simple-uu-99902,True,17,|-damage|p1a: Zacian|163/325|[from] Spikes
+battle-gen9ubers-1724,simple-uu-99902,True,17,|turn|18
+battle-gen9ubers-1724,simple-uu-99902,True,18,|
+battle-gen9ubers-1724,simple-uu-99902,True,18,|move|p1a: Zacian|Close Combat|p2a: Zarude
+battle-gen9ubers-1724,simple-uu-99902,True,18,|-supereffective|p2a: Zarude
+battle-gen9ubers-1724,simple-uu-99902,True,18,|-damage|p2a: Zarude|0 fnt
+battle-gen9ubers-1724,simple-uu-99902,True,18,|-unboost|p1a: Zacian|def|1
+battle-gen9ubers-1724,simple-uu-99902,True,18,|-unboost|p1a: Zacian|spd|1
+battle-gen9ubers-1724,simple-uu-99902,True,18,|faint|p2a: Zarude
+battle-gen9ubers-1724,simple-uu-99902,True,18,|
+battle-gen9ubers-1724,simple-uu-99902,True,18,|deinit
+battle-gen9ubers-1725,simple-uu-99902,True,0,|init|battle
+battle-gen9ubers-1725,simple-uu-99902,True,0,|title|wche652a999 vs. simple-uu-99902
+battle-gen9ubers-1725,simple-uu-99902,True,0,|j|☆wche652a999
+battle-gen9ubers-1725,simple-uu-99902,True,0,|j|☆simple-uu-99902
+battle-gen9ubers-1725,simple-uu-99902,True,0,|gametype|singles
+battle-gen9ubers-1725,simple-uu-99902,True,0,|player|p1|wche652a999|102|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|player|p2|simple-uu-99902|101|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|gen|9
+battle-gen9ubers-1725,simple-uu-99902,True,0,|tier|[Gen 9] Ubers
+battle-gen9ubers-1725,simple-uu-99902,True,0,|rule|HP Percentage Mod: HP is shown in percentages
+battle-gen9ubers-1725,simple-uu-99902,True,0,|rule|Endless Battle Clause: Forcing endless battles is banned
+battle-gen9ubers-1725,simple-uu-99902,True,0,|rule|Sleep Clause Mod: Limit one foe put to sleep
+battle-gen9ubers-1725,simple-uu-99902,True,0,|rule|Species Clause: Limit one of each Pokémon
+battle-gen9ubers-1725,simple-uu-99902,True,0,|rule|OHKO Clause: OHKO moves are banned
+battle-gen9ubers-1725,simple-uu-99902,True,0,|rule|Evasion Items Clause: Evasion items are banned
+battle-gen9ubers-1725,simple-uu-99902,True,0,|rule|Evasion Moves Clause: Evasion moves are banned
+battle-gen9ubers-1725,simple-uu-99902,True,0,|clearpoke
+battle-gen9ubers-1725,simple-uu-99902,True,0,"|poke|p1|Ribombee, F|"
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p1|Koraidon|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p1|Arceus-Ghost|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p1|Zacian-*|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p1|Eternatus|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p1|Kyogre|
+battle-gen9ubers-1725,simple-uu-99902,True,0,"|poke|p2|Tornadus-Therian, M|"
+battle-gen9ubers-1725,simple-uu-99902,True,0,"|poke|p2|Clodsire, F|"
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p2|Metagross|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p2|Rotom-Wash|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p2|Cobalion|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|poke|p2|Zarude-Dada|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|teampreview
+battle-gen9ubers-1725,simple-uu-99902,True,0,|
+battle-gen9ubers-1725,simple-uu-99902,True,0,|teamsize|p1|6
+battle-gen9ubers-1725,simple-uu-99902,True,0,|teamsize|p2|6
+battle-gen9ubers-1725,simple-uu-99902,True,0,|start
+battle-gen9ubers-1725,simple-uu-99902,True,0,"|switch|p1a: Ribombee|Ribombee, F|261/261"
+battle-gen9ubers-1725,simple-uu-99902,True,0,|switch|p2a: Rotom|Rotom-Wash|100/100
+battle-gen9ubers-1725,simple-uu-99902,True,0,|turn|1
+battle-gen9ubers-1725,simple-uu-99902,True,1,|
+battle-gen9ubers-1725,simple-uu-99902,True,1,|move|p1a: Ribombee|Sticky Web|p2a: Rotom
+battle-gen9ubers-1725,simple-uu-99902,True,1,|-sidestart|p2: simple-uu-99902|move: Sticky Web
+battle-gen9ubers-1725,simple-uu-99902,True,1,|move|p2a: Rotom|Hydro Pump|p1a: Ribombee|[miss]
+battle-gen9ubers-1725,simple-uu-99902,True,1,|-miss|p2a: Rotom|p1a: Ribombee
+battle-gen9ubers-1725,simple-uu-99902,True,1,|
+battle-gen9ubers-1725,simple-uu-99902,True,1,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,1,|turn|2
+battle-gen9ubers-1725,simple-uu-99902,True,2,|
+battle-gen9ubers-1725,simple-uu-99902,True,2,|move|p1a: Ribombee|Stun Spore|p2a: Rotom
+battle-gen9ubers-1725,simple-uu-99902,True,2,|-immune|p2a: Rotom
+battle-gen9ubers-1725,simple-uu-99902,True,2,|move|p2a: Rotom|Hydro Pump|p1a: Ribombee
+battle-gen9ubers-1725,simple-uu-99902,True,2,|-damage|p1a: Ribombee|75/261
+battle-gen9ubers-1725,simple-uu-99902,True,2,|
+battle-gen9ubers-1725,simple-uu-99902,True,2,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,2,|turn|3
+battle-gen9ubers-1725,simple-uu-99902,True,3,|
+battle-gen9ubers-1725,simple-uu-99902,True,3,|move|p1a: Ribombee|Moonblast|p2a: Rotom
+battle-gen9ubers-1725,simple-uu-99902,True,3,|-damage|p2a: Rotom|64/100
+battle-gen9ubers-1725,simple-uu-99902,True,3,|-unboost|p2a: Rotom|spa|1
+battle-gen9ubers-1725,simple-uu-99902,True,3,|move|p2a: Rotom|Hydro Pump|p1a: Ribombee
+battle-gen9ubers-1725,simple-uu-99902,True,3,|-damage|p1a: Ribombee|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,3,|faint|p1a: Ribombee
+battle-gen9ubers-1725,simple-uu-99902,True,3,|
+battle-gen9ubers-1725,simple-uu-99902,True,3,|-heal|p2a: Rotom|70/100|[from] item: Leftovers
+battle-gen9ubers-1725,simple-uu-99902,True,3,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,3,|
+battle-gen9ubers-1725,simple-uu-99902,True,3,|switch|p1a: Eternatus|Eternatus|421/421
+battle-gen9ubers-1725,simple-uu-99902,True,3,|-ability|p1a: Eternatus|Pressure
+battle-gen9ubers-1725,simple-uu-99902,True,3,|turn|4
+battle-gen9ubers-1725,simple-uu-99902,True,4,|
+battle-gen9ubers-1725,simple-uu-99902,True,4,|move|p1a: Eternatus|Dynamax Cannon|p2a: Rotom
+battle-gen9ubers-1725,simple-uu-99902,True,4,|-damage|p2a: Rotom|17/100
+battle-gen9ubers-1725,simple-uu-99902,True,4,|move|p2a: Rotom|Hydro Pump|p1a: Eternatus
+battle-gen9ubers-1725,simple-uu-99902,True,4,|-resisted|p1a: Eternatus
+battle-gen9ubers-1725,simple-uu-99902,True,4,|-damage|p1a: Eternatus|375/421
+battle-gen9ubers-1725,simple-uu-99902,True,4,|
+battle-gen9ubers-1725,simple-uu-99902,True,4,|-heal|p2a: Rotom|23/100|[from] item: Leftovers
+battle-gen9ubers-1725,simple-uu-99902,True,4,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,4,|turn|5
+battle-gen9ubers-1725,simple-uu-99902,True,5,|
+battle-gen9ubers-1725,simple-uu-99902,True,5,|move|p1a: Eternatus|Dynamax Cannon|p2a: Rotom
+battle-gen9ubers-1725,simple-uu-99902,True,5,|-damage|p2a: Rotom|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,5,|faint|p2a: Rotom
+battle-gen9ubers-1725,simple-uu-99902,True,5,|
+battle-gen9ubers-1725,simple-uu-99902,True,5,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,5,|
+battle-gen9ubers-1725,simple-uu-99902,True,5,|switch|p2a: Metagross|Metagross|100/100
+battle-gen9ubers-1725,simple-uu-99902,True,5,|-activate|p2a: Metagross|move: Sticky Web
+battle-gen9ubers-1725,simple-uu-99902,True,5,|-fail|p2a: Metagross|unboost|[from] ability: Clear Body|[of] p2a: Metagross
+battle-gen9ubers-1725,simple-uu-99902,True,5,|turn|6
+battle-gen9ubers-1725,simple-uu-99902,True,6,|
+battle-gen9ubers-1725,simple-uu-99902,True,6,|move|p1a: Eternatus|Fire Blast|p2a: Metagross|[miss]
+battle-gen9ubers-1725,simple-uu-99902,True,6,|-miss|p1a: Eternatus|p2a: Metagross
+battle-gen9ubers-1725,simple-uu-99902,True,6,|move|p2a: Metagross|Psychic Fangs|p1a: Eternatus
+battle-gen9ubers-1725,simple-uu-99902,True,6,|-supereffective|p1a: Eternatus
+battle-gen9ubers-1725,simple-uu-99902,True,6,|-damage|p1a: Eternatus|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,6,|faint|p1a: Eternatus
+battle-gen9ubers-1725,simple-uu-99902,True,6,|
+battle-gen9ubers-1725,simple-uu-99902,True,6,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,6,|
+battle-gen9ubers-1725,simple-uu-99902,True,6,|switch|p1a: Kyogre|Kyogre|376/376
+battle-gen9ubers-1725,simple-uu-99902,True,6,|-weather|RainDance|[from] ability: Drizzle|[of] p1a: Kyogre
+battle-gen9ubers-1725,simple-uu-99902,True,6,|turn|7
+battle-gen9ubers-1725,simple-uu-99902,True,7,|
+battle-gen9ubers-1725,simple-uu-99902,True,7,|move|p1a: Kyogre|Earthquake|p2a: Metagross
+battle-gen9ubers-1725,simple-uu-99902,True,7,|-supereffective|p2a: Metagross
+battle-gen9ubers-1725,simple-uu-99902,True,7,|-damage|p2a: Metagross|21/100
+battle-gen9ubers-1725,simple-uu-99902,True,7,|move|p2a: Metagross|Psychic Fangs|p1a: Kyogre
+battle-gen9ubers-1725,simple-uu-99902,True,7,|-damage|p1a: Kyogre|81/376
+battle-gen9ubers-1725,simple-uu-99902,True,7,|
+battle-gen9ubers-1725,simple-uu-99902,True,7,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,7,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,7,|turn|8
+battle-gen9ubers-1725,simple-uu-99902,True,8,|
+battle-gen9ubers-1725,simple-uu-99902,True,8,|move|p1a: Kyogre|Earthquake|p2a: Metagross
+battle-gen9ubers-1725,simple-uu-99902,True,8,|-supereffective|p2a: Metagross
+battle-gen9ubers-1725,simple-uu-99902,True,8,|-damage|p2a: Metagross|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,8,|faint|p2a: Metagross
+battle-gen9ubers-1725,simple-uu-99902,True,8,|
+battle-gen9ubers-1725,simple-uu-99902,True,8,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,8,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,8,|
+battle-gen9ubers-1725,simple-uu-99902,True,8,|switch|p2a: Zarude|Zarude-Dada|100/100
+battle-gen9ubers-1725,simple-uu-99902,True,8,|turn|9
+battle-gen9ubers-1725,simple-uu-99902,True,9,|
+battle-gen9ubers-1725,simple-uu-99902,True,9,|switch|p1a: Koraidon|Koraidon|341/341
+battle-gen9ubers-1725,simple-uu-99902,True,9,|-weather|SunnyDay|[from] ability: Orichalcum Pulse|[of] p1a: Koraidon
+battle-gen9ubers-1725,simple-uu-99902,True,9,|-activate|p1a: Koraidon|Orichalcum Pulse|[source]
+battle-gen9ubers-1725,simple-uu-99902,True,9,|move|p2a: Zarude|Power Whip|p1a: Koraidon
+battle-gen9ubers-1725,simple-uu-99902,True,9,|-resisted|p1a: Koraidon
+battle-gen9ubers-1725,simple-uu-99902,True,9,|-damage|p1a: Koraidon|248/341
+battle-gen9ubers-1725,simple-uu-99902,True,9,|
+battle-gen9ubers-1725,simple-uu-99902,True,9,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,9,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,9,|turn|10
+battle-gen9ubers-1725,simple-uu-99902,True,10,|
+battle-gen9ubers-1725,simple-uu-99902,True,10,|move|p1a: Koraidon|Flare Blitz|p2a: Zarude
+battle-gen9ubers-1725,simple-uu-99902,True,10,|-supereffective|p2a: Zarude
+battle-gen9ubers-1725,simple-uu-99902,True,10,|-damage|p2a: Zarude|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,10,|faint|p2a: Zarude
+battle-gen9ubers-1725,simple-uu-99902,True,10,|-damage|p1a: Koraidon|132/341|[from] Recoil
+battle-gen9ubers-1725,simple-uu-99902,True,10,|
+battle-gen9ubers-1725,simple-uu-99902,True,10,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,10,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,10,|
+battle-gen9ubers-1725,simple-uu-99902,True,10,"|switch|p2a: Tornadus|Tornadus-Therian, M|100/100"
+battle-gen9ubers-1725,simple-uu-99902,True,10,|turn|11
+battle-gen9ubers-1725,simple-uu-99902,True,11,|
+battle-gen9ubers-1725,simple-uu-99902,True,11,|switch|p1a: Zacian|Zacian-Crowned|325/325
+battle-gen9ubers-1725,simple-uu-99902,True,11,|-ability|p1a: Zacian|Intrepid Sword|boost
+battle-gen9ubers-1725,simple-uu-99902,True,11,|-boost|p1a: Zacian|atk|1
+battle-gen9ubers-1725,simple-uu-99902,True,11,|move|p2a: Tornadus|Hurricane|p1a: Zacian|[miss]
+battle-gen9ubers-1725,simple-uu-99902,True,11,|-miss|p2a: Tornadus|p1a: Zacian
+battle-gen9ubers-1725,simple-uu-99902,True,11,|
+battle-gen9ubers-1725,simple-uu-99902,True,11,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,11,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,11,|turn|12
+battle-gen9ubers-1725,simple-uu-99902,True,12,|
+battle-gen9ubers-1725,simple-uu-99902,True,12,|move|p1a: Zacian|Wild Charge|p2a: Tornadus
+battle-gen9ubers-1725,simple-uu-99902,True,12,|-supereffective|p2a: Tornadus
+battle-gen9ubers-1725,simple-uu-99902,True,12,|-damage|p2a: Tornadus|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,12,|faint|p2a: Tornadus
+battle-gen9ubers-1725,simple-uu-99902,True,12,|-damage|p1a: Zacian|242/325|[from] Recoil
+battle-gen9ubers-1725,simple-uu-99902,True,12,|
+battle-gen9ubers-1725,simple-uu-99902,True,12,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,12,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,12,|
+battle-gen9ubers-1725,simple-uu-99902,True,12,"|switch|p2a: Clodsire|Clodsire, F|100/100"
+battle-gen9ubers-1725,simple-uu-99902,True,12,|turn|13
+battle-gen9ubers-1725,simple-uu-99902,True,13,|
+battle-gen9ubers-1725,simple-uu-99902,True,13,|switch|p1a: Kyogre|Kyogre|81/376
+battle-gen9ubers-1725,simple-uu-99902,True,13,|-weather|RainDance|[from] ability: Drizzle|[of] p1a: Kyogre
+battle-gen9ubers-1725,simple-uu-99902,True,13,|move|p2a: Clodsire|Spikes|p1a: Kyogre
+battle-gen9ubers-1725,simple-uu-99902,True,13,|-sidestart|p1: wche652a999|Spikes
+battle-gen9ubers-1725,simple-uu-99902,True,13,|
+battle-gen9ubers-1725,simple-uu-99902,True,13,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,13,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,13,|turn|14
+battle-gen9ubers-1725,simple-uu-99902,True,14,|
+battle-gen9ubers-1725,simple-uu-99902,True,14,|move|p1a: Kyogre|Waterfall|p2a: Clodsire
+battle-gen9ubers-1725,simple-uu-99902,True,14,|-immune|p2a: Clodsire|[from] ability: Water Absorb
+battle-gen9ubers-1725,simple-uu-99902,True,14,|move|p2a: Clodsire|Earthquake|p1a: Kyogre
+battle-gen9ubers-1725,simple-uu-99902,True,14,|-damage|p1a: Kyogre|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,14,|faint|p1a: Kyogre
+battle-gen9ubers-1725,simple-uu-99902,True,14,|
+battle-gen9ubers-1725,simple-uu-99902,True,14,|-weather|RainDance|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,14,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,14,|
+battle-gen9ubers-1725,simple-uu-99902,True,14,|switch|p1a: Koraidon|Koraidon|132/341
+battle-gen9ubers-1725,simple-uu-99902,True,14,|-damage|p1a: Koraidon|90/341|[from] Spikes
+battle-gen9ubers-1725,simple-uu-99902,True,14,|-weather|SunnyDay|[from] ability: Orichalcum Pulse|[of] p1a: Koraidon
+battle-gen9ubers-1725,simple-uu-99902,True,14,|-activate|p1a: Koraidon|Orichalcum Pulse|[source]
+battle-gen9ubers-1725,simple-uu-99902,True,14,|turn|15
+battle-gen9ubers-1725,simple-uu-99902,True,15,|
+battle-gen9ubers-1725,simple-uu-99902,True,15,|move|p1a: Koraidon|Flare Blitz|p2a: Clodsire
+battle-gen9ubers-1725,simple-uu-99902,True,15,|-damage|p2a: Clodsire|18/100
+battle-gen9ubers-1725,simple-uu-99902,True,15,|-status|p2a: Clodsire|brn
+battle-gen9ubers-1725,simple-uu-99902,True,15,|-damage|p1a: Koraidon|0 fnt|[from] Recoil
+battle-gen9ubers-1725,simple-uu-99902,True,15,|faint|p1a: Koraidon
+battle-gen9ubers-1725,simple-uu-99902,True,15,|move|p2a: Clodsire|Earthquake|p1: Koraidon|[notarget]
+battle-gen9ubers-1725,simple-uu-99902,True,15,|-fail|p2a: Clodsire
+battle-gen9ubers-1725,simple-uu-99902,True,15,|
+battle-gen9ubers-1725,simple-uu-99902,True,15,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,15,|-damage|p2a: Clodsire|12/100 brn|[from] brn
+battle-gen9ubers-1725,simple-uu-99902,True,15,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,15,|
+battle-gen9ubers-1725,simple-uu-99902,True,15,|switch|p1a: Arceus|Arceus-Ghost|402/402
+battle-gen9ubers-1725,simple-uu-99902,True,15,|-damage|p1a: Arceus|352/402|[from] Spikes
+battle-gen9ubers-1725,simple-uu-99902,True,15,|turn|16
+battle-gen9ubers-1725,simple-uu-99902,True,16,|
+battle-gen9ubers-1725,simple-uu-99902,True,16,|move|p1a: Arceus|Judgment|p2a: Clodsire
+battle-gen9ubers-1725,simple-uu-99902,True,16,|-damage|p2a: Clodsire|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,16,|faint|p2a: Clodsire
+battle-gen9ubers-1725,simple-uu-99902,True,16,|
+battle-gen9ubers-1725,simple-uu-99902,True,16,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,16,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,16,|
+battle-gen9ubers-1725,simple-uu-99902,True,16,|switch|p2a: Cobalion|Cobalion|100/100
+battle-gen9ubers-1725,simple-uu-99902,True,16,|-activate|p2a: Cobalion|move: Sticky Web
+battle-gen9ubers-1725,simple-uu-99902,True,16,|-unboost|p2a: Cobalion|spe|1
+battle-gen9ubers-1725,simple-uu-99902,True,16,|turn|17
+battle-gen9ubers-1725,simple-uu-99902,True,17,|
+battle-gen9ubers-1725,simple-uu-99902,True,17,|move|p1a: Arceus|Aura Sphere|p2a: Cobalion
+battle-gen9ubers-1725,simple-uu-99902,True,17,|-supereffective|p2a: Cobalion
+battle-gen9ubers-1725,simple-uu-99902,True,17,|-damage|p2a: Cobalion|33/100
+battle-gen9ubers-1725,simple-uu-99902,True,17,|move|p2a: Cobalion|Volt Switch|p1a: Arceus
+battle-gen9ubers-1725,simple-uu-99902,True,17,|-damage|p1a: Arceus|310/402
+battle-gen9ubers-1725,simple-uu-99902,True,17,|
+battle-gen9ubers-1725,simple-uu-99902,True,17,|-weather|SunnyDay|[upkeep]
+battle-gen9ubers-1725,simple-uu-99902,True,17,|upkeep
+battle-gen9ubers-1725,simple-uu-99902,True,17,|turn|18
+battle-gen9ubers-1725,simple-uu-99902,True,18,|
+battle-gen9ubers-1725,simple-uu-99902,True,18,|move|p1a: Arceus|Aura Sphere|p2a: Cobalion
+battle-gen9ubers-1725,simple-uu-99902,True,18,|-supereffective|p2a: Cobalion
+battle-gen9ubers-1725,simple-uu-99902,True,18,|-damage|p2a: Cobalion|0 fnt
+battle-gen9ubers-1725,simple-uu-99902,True,18,|faint|p2a: Cobalion
+battle-gen9ubers-1725,simple-uu-99902,True,18,|
+battle-gen9ubers-1725,simple-uu-99902,True,18,|deinit
