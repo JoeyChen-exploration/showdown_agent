@@ -289,3 +289,75 @@ python analysis/run_ablation.py baseline
 1. 复盘 `simple-uu` 的 `decision_log`，对比这几组配置在同一局面下的候选打分差异找根因（issue #6）。
 2. 测试 `no_opening_script` + `setup_weight_15` 叠加配置，看收益是否叠加还是重叠（issue #8）。
 3. `max_damage-uber` 超时问题转给 v2"更快结束拉锯战"的专门设计（issue #4），不再指望调权重解决。
+
+---
+
+## 2026-07-22 复盘 issue #6（simple-uu），挖到 `_switch_score` 一个方向反了的 bug 并修复
+
+**目标 / 假设**：上一条记录留的"下一步"第 1 条——用 `decision_log` 复盘 `simple-uu` 这场，看
+`baseline`（稳定输）和 `no_opening_script`/`setup_weight_15`（稳定赢）在同一局面下具体选了什么
+不同的动作，找输的根因。
+
+**过程**：
+1. 想先靠 `events.csv`（记录双方每回合原始协议事件，本来是为这种复盘场景准备的）拿到
+   `battle_tag → 对手用户名` 的映射，结果发现 **`events.csv` 从第一次提交就是空的**（只有表头）——
+   定位到根因：poke_env 的 `cross_evaluate()` 每打完一场对局就立刻调用 `reset_battles()` 清空
+   `player.battles`，而 `run_ablation.py` 是等 15 个 bot 全打完才去读 `player.battles`，那时候早就
+   被清空了。这个"质化复盘"功能其实从没真正工作过。
+2. 修复：给 `analysis/run_ablation.py` 的 `build_player()` 加了一个 `_install_battle_archive()`，
+   给每个 player 实例的 `reset_battles` 打个补丁——清空前先把 `battles` 归档到
+   `player.battle_archive`，这样跑完全部 15 个 bot 后还能拿到完整历史。只改 `analysis/`（不属于
+   提交范围），没碰评测框架代码。同时写了 `analysis/trace_matchup.py`——针对单个 (配置, 对手) 组合
+   单独跑一次 Bo3，输出写到 `analysis/results/_trace/<config>__<opponent>/`（跟正式消融数据的目录
+   分开，不会覆盖已经跑好的 3 次重跑聚合结果），比每次为了复盘一个对手重跑全部 15 个 bot 快很多。
+3. 用 `trace_matchup.py` 分别跑 `baseline vs simple-uu`（0/3，全输）和
+   `no_opening_script vs simple-uu`（2/3，赢）、`setup_weight_15 vs simple-uu`（3/3，赢），对比
+   `decisions.csv` 前几回合的具体选择：
+   - `baseline` 里，Ribombee 开局脚本不管对面首发是谁都固定"黏黏网→急速折返"；第三局对面首发
+     Metagross 时，Ribombee 第 1 回合被 Psychic Fangs（超能力打毒系 2 倍效果）打到只剩 Focus Sash
+     保住的 1 点血，第 2 回合急速折返弹出后，弹出的换人目标（走 `_best_switch`，不是写死的）选了
+     **Eternatus**——而 Eternatus（毒/龙）挨 Metagross 的超能力系招式正好是 2 倍弱点，直接被
+     Psychic Fangs 一击打空（421→0）。
+   - 查 `events.csv` 原始事件确认了这个一击必杀，回头去看 `_switch_score()` 的代码：
+     ```python
+     defense_risk = max((opponent.damage_multiplier(t) for t in candidate.types if t), default=1.0)
+     ```
+     poke_env 的 `pokemon.damage_multiplier(t)` 语义是"**这个 pokemon** 挨类型 `t` 攻击时的伤害
+     倍率"（查了 poke_env 源码 `pokemon.py`/`pokemon_type.py` 确认，不是猜的）。这行代码算的是
+     `opponent.damage_multiplier(t) for t in candidate.types`——**候选人自己的属性打在对手身上的
+     倍率**，是进攻效果，不是"候选人换上来会不会被打疼"的防御风险，变量名和实际算出来的东西方向
+     完全反了。对应到 Eternatus 案例：算出来的是"毒/龙打钢/超能力系"（很低，钢免疫毒），公式里
+     `offense - defense_risk * SWITCH_DEFENSE_WEIGHT` 的惩罚项几乎不扣分，看起来是个"安全"的换人，
+     但完全没算到 Eternatus 反过来会被超能力系克制这件事。
+   - **这个 bug 影响范围比 simple-uu 这一个对手大得多**：`_switch_score` 是每次强制换人（U-turn
+     弹出、精灵阵亡）都会跑的通用逻辑。回头看上一轮消融的"`SWITCH_DEFENSE_WEIGHT`（30/60/90）在
+     测试范围内不敏感"这个结论，很可能是因为这个权重乘的量本身就算错了——不管权重调多大，对
+     "真正的防御风险"这个维度都没有区分度，调权重看不出差异不代表换人逻辑没问题，恰恰相反。
+
+**改动**：把 `wche652.py` 的 `_switch_score()` 改成
+```python
+defense_risk = max((candidate.damage_multiplier(t) for t in opponent.types if t), default=1.0)
+```
+（受害者是 `candidate`，攻击方的属性来自 `opponent.types`——跟文件里 `_power_score`/
+`_incoming_threat_score` 已经用对的同一个模式对齐）。改完让 code-reviewer 复查了一遍：确认修复
+语义正确、文件里其它 4 处 `damage_multiplier` 调用方向都是对的（只有这一处反了）、`_switch_score`
+的三个调用点（`_best_switch`/`_ribombee_opening`/`_best_scored_action`）都只依赖"分数越高越好"这个
+相对关系，不依赖旧的错误行为，没有隐藏的向后兼容坑。
+
+**效果（初步，单次 Bo3 复测）**：修复后重跑 `baseline vs simple-uu`，从 0/3（全输）变成 3/3（全赢）。
+这次随机首发换了别的对手（不是 Metagross，poke_env 首发是均匀随机的），没能复现一模一样的场景，
+但换人选择明显更合理（比如挨 Rotom-Wash 打的换人目标不再是被克制的那个）。
+
+**重要影响 / 后续**：这个 bug 影响每一次强制换人，不只是 simple-uu 这一场——意味着 2026-07-21/22
+两轮消融实验（9 组筛选 + 7 组多次重跑确认）**全部是基于修复前的错误换人逻辑跑出来的**，
+`Ablation_Study_v1.md` 和 `Report_Draft.md` 3.2-3.4 节现在描述的已经不是当前这版智能体的真实行为。
+跟用户确认过，方向是**重新跑一遍完整消融**（7 组配置 × 3 次重跑）拿到基于修复后代码的准确数据，
+再重写这几份文档——这个也是很好的报告素材，"从真实对局日志定位到一个方向搞反的核心 bug、修复、
+量化改进"这条线，比单纯调参数的消融实验更能体现专家系统"观察 → 推理 →改进"的方法论。
+
+**下一步**：
+1. 后台重新跑 7 组配置 × 3 次重跑消融（用修复后的代码）。
+2. 跑完后重写 `Ablation_Study_v1.md` 的多次重跑章节和 `Report_Draft.md` 3.2-3.4 节，数据和结论
+   都要更新成修复后的版本；`Report_Outline.md` 同步。**2026-07-22 明确**：报告里只呈现数据本身
+   （修正前后的胜场对比、观察到的规律），不展开这次是怎么从代码层面调试定位到问题的过程——
+   那部分细节留在这份 Experiment_Log 里，不进报告。

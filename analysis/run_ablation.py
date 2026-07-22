@@ -72,7 +72,28 @@ def build_player(run_index: int, overrides: dict):
             raise AttributeError(f"{AGENT_FILE.name} has no module-level constant {key!r} to override")
         setattr(module, key, value)
     account_config = AccountConfiguration(f"{AGENT_NAME[:8]}a{run_index}", None)
-    return module.CustomAgent(account_configuration=account_config, battle_format="gen9ubers")
+    player = module.CustomAgent(account_configuration=account_config, battle_format="gen9ubers")
+    _install_battle_archive(player)
+    return player
+
+
+def _install_battle_archive(player):
+    """poke_env's cross_evaluate() calls player.reset_battles() right after every single
+    bot matchup (see poke_env/player/utils.py), which clears player.battles - so by the
+    time run_once() finishes all 15 matchups and tries to read player.battles to write
+    events.csv, it has always been empty (confirmed: events.csv has been header-only
+    since the very first commit that added it). Patch this one instance's reset_battles
+    to archive battles into player.battle_archive before clearing, so the full history
+    across all opponents survives to the end of run_once().
+    """
+    player.battle_archive = {}
+    original_reset_battles = player.reset_battles
+
+    def reset_battles_and_archive():
+        player.battle_archive.update(player.battles)
+        original_reset_battles()
+
+    player.reset_battles = reset_battles_and_archive
 
 
 def run_once(name: str, overrides: dict, run_index: int, repeat: int) -> dict:
@@ -124,7 +145,10 @@ def run_once(name: str, overrides: dict, run_index: int, repeat: int) -> dict:
         with open(config_dir / "events.csv", "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(["battle_tag", "opponent_username", "won", "turn", "event"])
-            for battle in player.battles.values():
+            # player.battles is reset after every single matchup by poke_env's
+            # cross_evaluate() (see _install_battle_archive) - battle_archive is what
+            # actually survives across all 15 bots.
+            for battle in {**player.battle_archive, **player.battles}.values():
                 for turn, observation in battle.observations.items():
                     for event in observation.events:
                         writer.writerow(
