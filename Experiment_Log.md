@@ -266,9 +266,26 @@ python analysis/run_ablation.py baseline
 `mean_mark`/`stdev_mark`/`mean_beaten` 等）。冒烟测试（`baseline` 跑 2 次）验证过机制正常——
 `max_damage-uber` 的胜率标准差明显高于其他对手，符合"这场容易被超时噪声干扰"的预期。
 
-**结果**：7 组配置（`baseline`/`no_hard_ko`/`no_opening_script`/`setup_weight_15`/`setup_weight_45`/
-`switch_cost_0`/`switch_cost_50`）× 3 次重跑，后台跑，还没跑完。
+**结果**：7 组配置 × 3 次重跑跑完了，`mean_mark`/`stdev_mark`/`mean_beaten`（15 场制）：
+`baseline` 9.17/0.29/13.33，`no_hard_ko` 9.00/0.00/13.00，`no_opening_script` **9.50/0.00/14.00**，
+`setup_weight_15` **9.50/0.00/14.00**，`setup_weight_45` 8.83/0.29/12.67（全场最差），
+`switch_cost_0` 9.00/0.00/13.00，`switch_cost_50` 9.33/0.29/13.67。完整的按对手拆分数据、信号
+解读、更新后的敏感度分类，写进了 `Ablation_Study_v1.md` 新增的"2026-07-22 多次重跑确认结果"一节
+（不在这里重复）。
 
-**下一步**：跑完之后更新 `Ablation_Study_v1.md`（或者按 issue #1 的文档整理计划，改名成
-`Ablation_Study.md` 之后在里面加新章节），把均值/标准差数据换算成"哪个参数值真的更好"的结论，
-喂给 issue #8（打分公式权重的系统性校准）。
+**观察 / 结论（摘要，完整版见 `Ablation_Study_v1.md`）**：
+1. `max_damage-uber` 这场的输赢在这 7 个参数上不敏感——筛选轮里 `baseline` 那次唯一的"赢"标准差
+   高达 0.58，是全表最不稳定的一格，其余 6 组配置全部稳定输（stdev=0）。说明筛选轮"只有 baseline
+   赢这场"的对比其实是噪声，不是 baseline 真的更强；这场胜负目前主要由是否卡进 90 秒超时决定，
+   继续调这几个权重没用，要靠 issue #4 的结构性改动。
+2. `ENABLE_RIBOMBEE_OPENING=False`（关闭开局脚本）和 `SETUP_BOOST_WEIGHT=15`（下调铺垫权重）
+   两组独立地把结果稳定在 14/15（stdev=0），机制相同：都是让 `simple-uu` 从稳定输翻成稳定赢，
+   而"代价"（`max_damage-uber` 从偶尔赢变稳定输）根据第 1 条其实不算真代价。这解决了筛选轮里
+   `no_opening_script` "打平、说不清是不是噪声"的悬案——多次重跑后是清楚的正向信号。
+3. 三种完全不同机制的改动（关开局脚本 / 调铺垫权重 / 调换人成本到 50）都能独立把 `simple-uu`
+   从稳定输翻成稳定赢，说明背后可能有同一个根因在起作用，值得单独复盘 `decision_log`（issue #6）。
+
+**下一步**：
+1. 复盘 `simple-uu` 的 `decision_log`，对比这几组配置在同一局面下的候选打分差异找根因（issue #6）。
+2. 测试 `no_opening_script` + `setup_weight_15` 叠加配置，看收益是否叠加还是重叠（issue #8）。
+3. `max_damage-uber` 超时问题转给 v2"更快结束拉锯战"的专门设计（issue #4），不再指望调权重解决。
