@@ -216,8 +216,10 @@ python analysis/run_ablation.py baseline
    铺垫招式会漏判——现在队伍里没人用这类招式，不影响，记录备查。
 5. （Suggestion，未处理）`_survivability_factor` 是硬阈值 0/1 二值判断，不是连续过渡，会让消融实验里
    权重扫描的结果不连续/有跳变，解读 `analysis/results/*/decisions.csv` 时要注意这一点。
-6. （Suggestion，未处理）`CONFIGS` 没有覆盖 `KO_EFFECTIVE_HP_THRESHOLD`/`KO_NEUTRAL_HP_THRESHOLD`
-   这两个阈值的消融——如果 report 要讨论 KO 阈值校准（呼应第 1 条），目前没有对应数据。
+6. （已过时——2026-07-22 修复了第 1 条后这两个常量被删掉了）原文：`CONFIGS` 没有覆盖
+   `KO_EFFECTIVE_HP_THRESHOLD`/`KO_NEUTRAL_HP_THRESHOLD` 这两个阈值的消融。修复后 `_find_ko_move`
+   改用跟 `_incoming_threat_score` 一致的 `_power_score`/`INCOMING_THREAT_SCALE` 估算，两个阈值
+   常量已删除，这条消融覆盖缺口不再适用。
 7. 已修复：传入不存在的配置名现在报友好错误，不是裸 `KeyError`。
 
 **观察 / 结论**：写了实质决策逻辑代码之后主动跑一次独立 code review 是值得的——这次直接挖出一条
@@ -406,3 +408,44 @@ defense_risk = max((candidate.damage_multiplier(t) for t in opponent.types if t)
 2. `SWITCH_DEFENSE_WEIGHT`（30/60/90，之前判定"不敏感"）建立在同一个错误公式上，之前的"不敏感"
    结论也不可信，值得找机会重新测一次（issue #8）。
 3. `baseline` 标准差变大这件事先记下来，等以后有机会再跑更多次重跑确认是不是真实效应。
+
+---
+
+## 2026-07-23 v1 遗留的另外两个已知 bug 一起修：对手速度估算、KO 判断威力盲区
+
+**目标 / 假设**：`_switch_score` 那个方向反的 bug 修完之后，用户提出"既然发现了一个 bug，就把 v1
+现存的已知 bug 一次修完，严谨一点，再重新跑一遍消融"，不要修一个跑一次、来回折腾。盘点 1st_strategy.md
+"待细化"清单和之前 code review 记录，v1 目前有记录、但还没动手的正确性 bug 只有两个（跟 issue #4/#5/
+#7/#8 那类"设计/校准/新功能"性质的待办不是一回事，那些不算 bug）：
+
+1. **对手速度估算系统性偏低**（issue #3，2026-07-21 冒烟测试就抓到的真实案例：Ribombee 被速度
+   投资过的对手 Zacian-Crowned 反超，第 2 回合阵亡，因为 `_effective_speed` 对未知对手直接退化成
+   种族值 148，而对面真实速度约 414）。
+2. **硬短路 KO 判断没看招式威力**（issue #13，2026-07-21 code review 挖出来、当时决定留到"下一个
+   version"的那条）。
+
+**改动**：
+- `_effective_speed`：对手（`stats_known=False`）不再直接用 `mon.base_stats["spe"]`（种族值原始
+  数字），改成 `_max_speed_estimate()`——按标准的满配速度个体值/努力值/正性格公式
+  `(2*base + 31 + 63 + 5) * 1.1` 估算"这个种族理论上能跑多快"，宁可高估对手速度、多几次保守换人，
+  也不要像之前那样低估导致像 Ribombee 那次一样的误判。用真实案例验证过：Zacian-Crowned（种族速度
+  148）新估算是 434.5，超过 Ribombee 的真实速度（约 381.7）——现在能正确判断对面更快了。
+- `_find_ko_move`：`likely_ko` 判断不再是"属性倍率 + 对面血量百分比"两个独立阈值判断，改成跟
+  `_incoming_threat_score` 一致的口径——用 `_power_score(move, me, opp) / INCOMING_THREAT_SCALE`
+  估算这一下大概能打掉对面百分之多少血，跟对面当前血量百分比直接比较，只有"估计打得死"才算数。
+  威力弱的招式即使属性克制、对面残血，现在也不会被误判成"稳斩"。原来的 `KO_EFFECTIVE_HP_THRESHOLD`/
+  `KO_NEUTRAL_HP_THRESHOLD` 两个阈值常量删掉了（改完之后没有代码再用到）。
+
+**验证**：两处改动都单独让 code-reviewer 复查过，均无 Critical/Warning。速度估算那处有一条
+Suggestion：现在对所有未知对手都假设"投满速度"，可能让智能体在对面其实很慢的局面里也变得偏保守
+（铺垫/回血招式更容易被判定"扛不住"而放弃）——不是逻辑错误，是这个保守估计策略本身的副作用，
+留意这次重新消融的数据里铺垫类招式的使用情况是不是变少了。
+
+**结果**：两个修复一起加上后，后台重新跑一遍完整的 7 组配置 × 3 次重跑消融（不再像上一轮那样
+修一个跑一次），跑完更新 `Ablation_Study_v1.md`/`Report_Draft.md`。
+
+**下一步**：
+1. 等后台消融跑完，把这两处修复的效果和上一轮（只修了 `_switch_score`）的数据放在一起看。
+2. 检查 speed-estimation review 提到的"铺垫招式是否变得过度保守"这个疑虑，在新的 `decision_log`
+   里能不能看出来。
+3. `SWITCH_DEFENSE_WEIGHT` 的重测（issue #8）等这轮跑完之后再排期。
