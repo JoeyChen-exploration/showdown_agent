@@ -4,22 +4,31 @@ Ablation runner for the wche652 expert-system agent.
 This script is NOT part of the graded submission (only players/<upi>.py is), so unlike
 that file it is free to read/write files on disk. It loads a fresh copy of the agent
 module per configuration, patches its tunable module-level constants, runs the full
-15-bot tournament, and dumps per-bot results, the agent's in-memory decision trace, and
-the raw turn-by-turn battle events (from poke_env's own Battle.observations) to CSV.
+15-bot tournament (optionally repeated several times per config to average out
+run-to-run randomness), and dumps per-bot results, the agent's in-memory decision
+trace, and the raw turn-by-turn battle events (from poke_env's own Battle.observations)
+to CSV.
 
 Usage (from the repo root, with the local Showdown server running):
-    pokemon/bin/python analysis/run_ablation.py [config_name ...]
+    pokemon/bin/python analysis/run_ablation.py [--repeats N] [config_name ...]
 
-With no arguments, runs every configuration in CONFIGS.
+With no config names, runs every configuration in CONFIGS. --repeats defaults to 1
+(fast single-run screening, e.g. to find which knobs even matter - see
+Ablation_Study_v1.md for the screening round this was built for). Once a subset of
+configs looks sensitive, re-run just those with --repeats 3 (or more) to average out
+noise before trusting which value is actually better - a single run is not reliable
+enough on its own (see GitHub issue #2).
 
-NOTE: configs are run serially within one process, and bot/player account names are only
-deconflicted *within* that one run (see the bot_id_start comment below). Do not launch two
-copies of this script at the same time against the same local Showdown server - they would
-both start numbering from the same ids and collide, reproducing the "nametaken" bug this
-script was written to avoid in the first place.
+NOTE: configs/repeats are run serially within one process, and bot/player account names
+are only deconflicted *within* that one run (see the bot_id_start comment below). Do not
+launch two copies of this script at the same time against the same local Showdown server
+- they would both start numbering from the same ids and collide, reproducing the
+"nametaken" bug this script was written to avoid in the first place.
 """
 
+import argparse
 import csv
+import statistics
 import sys
 from pathlib import Path
 
@@ -56,29 +65,31 @@ DECISION_LOG_FIELDS = [
 ]
 
 
-def build_player(config_index: int, overrides: dict):
-    module = expert_main.load_module_from_file(AGENT_FILE, f"{AGENT_NAME}_ablation_{config_index}")
+def build_player(run_index: int, overrides: dict):
+    module = expert_main.load_module_from_file(AGENT_FILE, f"{AGENT_NAME}_ablation_{run_index}")
     for key, value in overrides.items():
         if not hasattr(module, key):
             raise AttributeError(f"{AGENT_FILE.name} has no module-level constant {key!r} to override")
         setattr(module, key, value)
-    account_config = AccountConfiguration(f"{AGENT_NAME[:10]}a{config_index}", None)
+    account_config = AccountConfiguration(f"{AGENT_NAME[:8]}a{run_index}", None)
     return module.CustomAgent(account_configuration=account_config, battle_format="gen9ubers")
 
 
-def run_config(name: str, overrides: dict, config_index: int) -> dict:
-    player = build_player(config_index, overrides)
-    # Bot account names are only unique *within* one gather_bots() call (ids 1..15), so every
-    # config needs its own id range - otherwise the second config's bots collide with the
-    # first's still-lingering connections on the local Showdown server ("nametaken" errors,
-    # which get counted as losses and silently corrupt the results). The 100-wide gap only
-    # stays collision-free while each config's bot roster fits under 100 bots.
+def run_once(name: str, overrides: dict, run_index: int, repeat: int) -> dict:
+    """Runs one full 15-bot tournament for one (config, repeat) pair."""
+    player = build_player(run_index, overrides)
+    # Bot account names are only unique *within* one gather_bots() call (ids 1..15), so
+    # every (config, repeat) pair needs its own id range - otherwise it collides with a
+    # still-lingering connection from an earlier run on the local Showdown server
+    # ("nametaken" errors, which get counted as losses and silently corrupt the results).
+    # The 100-wide gap only stays collision-free while each config's bot roster fits
+    # under 100 bots.
     bots_per_config = len(expert_main.BOT_STYLE_ORDER) * len(expert_main.BOT_TEAM_ORDER)
     assert bots_per_config < 100, (
-        f"{bots_per_config} bots/config no longer fits the 100-id gap between configs; "
-        "widen the gap in run_config() before trusting ablation results"
+        f"{bots_per_config} bots/config no longer fits the 100-id gap between runs; "
+        "widen the gap in run_once() before trusting ablation results"
     )
-    bots = expert_main.gather_bots(bot_id_start=config_index * 100 + 1)
+    bots = expert_main.gather_bots(bot_id_start=run_index * 100 + 1)
 
     per_bot_rows = []
     beaten = 0
@@ -89,7 +100,7 @@ def run_config(name: str, overrides: dict, config_index: int) -> dict:
         beaten += int(did_beat)
         print(f"winrate={winrate:.2f}{' (beat)' if did_beat else ''}")
         per_bot_rows.append(
-            {"config": name, "opponent": bot.username, "winrate": winrate, "beaten": did_beat}
+            {"config": name, "repeat": repeat, "opponent": bot.username, "winrate": winrate, "beaten": did_beat}
         )
 
     rank = len(bots) + 1 - beaten
@@ -98,50 +109,119 @@ def run_config(name: str, overrides: dict, config_index: int) -> dict:
     config_dir = RESULTS_DIR / name
     config_dir.mkdir(parents=True, exist_ok=True)
 
+    # Only keep the decision/event trace for the first repeat - it's for qualitative
+    # drill-down (see GitHub issue #6), not part of the quantitative comparison, and
+    # keeping every repeat's trace would multiply file count for no analytical benefit.
+    if repeat == 0:
+        with open(config_dir / "decisions.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=DECISION_LOG_FIELDS)
+            writer.writeheader()
+            for entry in player.decision_log:
+                row = dict(entry)
+                row["candidates"] = repr(row["candidates"])
+                writer.writerow(row)
+
+        with open(config_dir / "events.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["battle_tag", "opponent_username", "won", "turn", "event"])
+            for battle in player.battles.values():
+                for turn, observation in battle.observations.items():
+                    for event in observation.events:
+                        writer.writerow(
+                            [battle.battle_tag, battle.opponent_username, battle.won, turn, "|".join(event)]
+                        )
+
+    return {
+        "config": name, "repeat": repeat, "rank": rank, "mark": mark,
+        "beaten": beaten, "total": len(bots), "per_bot_rows": per_bot_rows,
+    }
+
+
+def run_config(name: str, overrides: dict, run_index_start: int, repeats: int) -> dict:
+    """Runs `repeats` full tournaments for one config and aggregates the results."""
+    repeat_results = []
+    for repeat in range(repeats):
+        if repeats > 1:
+            print(f"  -- repeat {repeat + 1}/{repeats} --")
+        repeat_results.append(run_once(name, overrides, run_index_start + repeat, repeat))
+
+    config_dir = RESULTS_DIR / name
+    all_per_bot_rows = [row for result in repeat_results for row in result["per_bot_rows"]]
     with open(config_dir / "per_bot.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["config", "opponent", "winrate", "beaten"])
+        writer = csv.DictWriter(f, fieldnames=["config", "repeat", "opponent", "winrate", "beaten"])
         writer.writeheader()
-        writer.writerows(per_bot_rows)
+        writer.writerows(all_per_bot_rows)
 
-    with open(config_dir / "decisions.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=DECISION_LOG_FIELDS)
+    # Aggregate per opponent across repeats: mean/stdev winrate and how often it counted
+    # as a win, so a config's reliability against a specific bot is visible, not just the
+    # aggregate mark - this is what lets a "tied on mark" result (e.g. no_opening_script
+    # vs baseline in the first screening round) actually get resolved.
+    by_opponent = {}
+    for row in all_per_bot_rows:
+        by_opponent.setdefault(row["opponent"].rsplit("-", 1)[0], []).append(row)
+    summary_rows = []
+    for opponent, rows in sorted(by_opponent.items()):
+        winrates = [r["winrate"] for r in rows]
+        summary_rows.append({
+            "config": name,
+            "opponent": opponent,
+            "repeats": len(rows),
+            "mean_winrate": statistics.mean(winrates),
+            "stdev_winrate": statistics.stdev(winrates) if len(winrates) > 1 else 0.0,
+            "beaten_count": sum(1 for r in rows if r["beaten"]),
+        })
+    with open(config_dir / "per_bot_summary.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=["config", "opponent", "repeats", "mean_winrate", "stdev_winrate", "beaten_count"]
+        )
         writer.writeheader()
-        for entry in player.decision_log:
-            row = dict(entry)
-            row["candidates"] = repr(row["candidates"])
-            writer.writerow(row)
+        writer.writerows(summary_rows)
 
-    with open(config_dir / "events.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(["battle_tag", "opponent_username", "won", "turn", "event"])
-        for battle in player.battles.values():
-            for turn, observation in battle.observations.items():
-                for event in observation.events:
-                    writer.writerow(
-                        [battle.battle_tag, battle.opponent_username, battle.won, turn, "|".join(event)]
-                    )
-
-    return {"config": name, "rank": rank, "mark": mark, "beaten": beaten, "total": len(bots)}
+    marks = [r["mark"] for r in repeat_results]
+    beaten_counts = [r["beaten"] for r in repeat_results]
+    return {
+        "config": name,
+        "repeats": repeats,
+        "mean_mark": statistics.mean(marks),
+        "stdev_mark": statistics.stdev(marks) if len(marks) > 1 else 0.0,
+        "mean_beaten": statistics.mean(beaten_counts),
+        "min_beaten": min(beaten_counts),
+        "max_beaten": max(beaten_counts),
+        "total": repeat_results[0]["total"],
+    }
 
 
 def main():
-    requested = sys.argv[1:]
-    unknown = [name for name in requested if name not in CONFIGS]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--repeats", type=int, default=1, help="tournaments per config (default: 1, fast screening)")
+    parser.add_argument("configs", nargs="*", help="config names to run (default: all)")
+    args = parser.parse_args()
+
+    unknown = [name for name in args.configs if name not in CONFIGS]
     if unknown:
         sys.exit(f"unknown config name(s): {unknown!r}; available: {list(CONFIGS)}")
-    configs = {name: CONFIGS[name] for name in requested} if requested else CONFIGS
+    configs = {name: CONFIGS[name] for name in args.configs} if args.configs else CONFIGS
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     total_configs = len(configs)
     summary_rows = []
+    run_index = 0
     for index, (name, overrides) in enumerate(configs.items()):
-        print(f"=== [{index + 1}/{total_configs}] config: {name} ({overrides or 'baseline'}) ===")
-        summary = run_config(name, overrides, index)
-        print(f"  -> rank=#{summary['rank']} mark={summary['mark']} beaten={summary['beaten']}/{summary['total']}")
+        print(f"=== [{index + 1}/{total_configs}] config: {name} ({overrides or 'baseline'}), "
+              f"{args.repeats} repeat(s) ===")
+        summary = run_config(name, overrides, run_index, args.repeats)
+        run_index += args.repeats
+        print(
+            f"  -> mean_mark={summary['mean_mark']:.2f} (stdev={summary['stdev_mark']:.2f}) "
+            f"mean_beaten={summary['mean_beaten']:.1f}/{summary['total']} "
+            f"(range {summary['min_beaten']}-{summary['max_beaten']})"
+        )
         summary_rows.append(summary)
 
     with open(RESULTS_DIR / "summary.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["config", "rank", "mark", "beaten", "total"])
+        writer = csv.DictWriter(f, fieldnames=[
+            "config", "repeats", "mean_mark", "stdev_mark", "mean_beaten", "min_beaten", "max_beaten", "total",
+        ])
         writer.writeheader()
         writer.writerows(summary_rows)
 
