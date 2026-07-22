@@ -248,3 +248,27 @@ python analysis/run_ablation.py baseline
 **下一步**：见 `Ablation_Study_v1.md` 的"下一步"部分（复盘 `simple-uu`/`max_damage-uber` 的
 `decision_log`；`no_opening_script` 这类打平的结果需要多轮重跑才能判断是否显著；v2 把"更快结束
 拉锯战"列为专门设计目标）。
+
+---
+
+## 2026-07-22 消融实验支持多次重跑（GitHub issue #2），跑筛选出来的敏感配置
+
+**目标 / 假设**：上一轮 9 组消融是"筛选实验"（每组只跑一次），已经区分出敏感变量
+（`ENABLE_HARD_KO`/`SETUP_BOOST_WEIGHT`/`SWITCH_COST`）、不敏感变量（`SWITCH_DEFENSE_WEIGHT`）、
+信号被噪声盖住需要重跑确认的变量（`ENABLE_RIBOMBEE_OPENING`）。这一轮给 `analysis/run_ablation.py`
+加多次重跑支持，对筛出来的敏感/不确定配置跑 3 次取均值，不敏感的 `switch_defense_weight_30/90`
+先不重跑（沿用上一轮的单次数据）。
+
+**改动**：`analysis/run_ablation.py` 加 `--repeats N` 参数（默认 1，保留原来的快速筛选模式）。
+每个 (配置, 第几次重跑) 组合独立分配 bot 账号编号段避免撞名；`decisions.csv`/`events.csv`
+（质化复盘用）只保留第一次重跑的，不随重跑次数膨胀；新增 `per_bot_summary.csv`
+（每个对手在多次重跑里的均值/标准差胜率）和聚合后的 `summary.csv`（每个配置的
+`mean_mark`/`stdev_mark`/`mean_beaten` 等）。冒烟测试（`baseline` 跑 2 次）验证过机制正常——
+`max_damage-uber` 的胜率标准差明显高于其他对手，符合"这场容易被超时噪声干扰"的预期。
+
+**结果**：7 组配置（`baseline`/`no_hard_ko`/`no_opening_script`/`setup_weight_15`/`setup_weight_45`/
+`switch_cost_0`/`switch_cost_50`）× 3 次重跑，后台跑，还没跑完。
+
+**下一步**：跑完之后更新 `Ablation_Study_v1.md`（或者按 issue #1 的文档整理计划，改名成
+`Ablation_Study.md` 之后在里面加新章节），把均值/标准差数据换算成"哪个参数值真的更好"的结论，
+喂给 issue #8（打分公式权重的系统性校准）。
