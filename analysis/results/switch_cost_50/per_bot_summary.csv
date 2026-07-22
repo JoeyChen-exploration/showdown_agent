@@ -1,5 +1,5 @@
 config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
-switch_cost_50,max_damage-nu,3,1.0,0.0,3
+switch_cost_50,max_damage-nu,3,0.8888888888888888,0.1924500897298753,3
 switch_cost_50,max_damage-ou,3,1.0,0.0,3
 switch_cost_50,max_damage-ru,3,1.0,0.0,3
 switch_cost_50,max_damage-uber,3,0.0,0.0,0
@@ -9,8 +9,8 @@ switch_cost_50,random-ou,3,1.0,0.0,3
 switch_cost_50,random-ru,3,1.0,0.0,3
 switch_cost_50,random-uber,3,1.0,0.0,3
 switch_cost_50,random-uu,3,1.0,0.0,3
-switch_cost_50,simple-nu,3,0.8888888888888888,0.1924500897298753,3
+switch_cost_50,simple-nu,3,1.0,0.0,3
 switch_cost_50,simple-ou,3,0.8888888888888888,0.1924500897298753,3
 switch_cost_50,simple-ru,3,1.0,0.0,3
-switch_cost_50,simple-uber,3,0.7777777777777778,0.3849001794597505,2
-switch_cost_50,simple-uu,3,0.8888888888888888,0.1924500897298753,3
+switch_cost_50,simple-uber,3,0.7777777777777778,0.1924500897298753,3
+switch_cost_50,simple-uu,3,1.0,0.0,3

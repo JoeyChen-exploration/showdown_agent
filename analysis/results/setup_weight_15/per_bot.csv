@@ -29,7 +29,7 @@ setup_weight_15,1,random-ou-1012,1.0,True
 setup_weight_15,1,random-uu-1013,1.0,True
 setup_weight_15,1,random-ru-1014,1.0,True
 setup_weight_15,1,random-nu-1015,1.0,True
-setup_weight_15,2,simple-uber-1101,0.6666666666666666,True
+setup_weight_15,2,simple-uber-1101,1.0,True
 setup_weight_15,2,simple-ou-1102,1.0,True
 setup_weight_15,2,simple-uu-1103,1.0,True
 setup_weight_15,2,simple-ru-1104,1.0,True
