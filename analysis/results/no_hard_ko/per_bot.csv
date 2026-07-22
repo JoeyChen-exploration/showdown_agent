@@ -1,0 +1,16 @@
+config,opponent,winrate,beaten
+no_hard_ko,simple-uber-101,0.6666666666666666,True
+no_hard_ko,simple-ou-102,1.0,True
+no_hard_ko,simple-uu-103,0.3333333333333333,False
+no_hard_ko,simple-ru-104,1.0,True
+no_hard_ko,simple-nu-105,1.0,True
+no_hard_ko,max_damage-uber-106,0.0,False
+no_hard_ko,max_damage-ou-107,1.0,True
+no_hard_ko,max_damage-uu-108,1.0,True
+no_hard_ko,max_damage-ru-109,1.0,True
+no_hard_ko,max_damage-nu-110,1.0,True
+no_hard_ko,random-uber-111,1.0,True
+no_hard_ko,random-ou-112,1.0,True
+no_hard_ko,random-uu-113,1.0,True
+no_hard_ko,random-ru-114,1.0,True
+no_hard_ko,random-nu-115,1.0,True

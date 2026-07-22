@@ -47,6 +47,8 @@
 队伍：uber → ou → uu → ru → nu        （bots/teams/*.txt）
 ```
 
+30 只对手精灵（5 档队伍 × 6 只）逐个的属性/特性/道具/太晶/招式，见 [Opponent_Roster.md](Opponent_Roster.md)。
+
 ### 3.1 三种 AI 风格（决策逻辑的强弱，从强到弱）
 
 | 风格 | 实现 | 决策逻辑 |

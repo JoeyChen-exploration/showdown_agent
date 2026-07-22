@@ -1,0 +1,16 @@
+config,opponent,winrate,beaten
+setup_weight_45,simple-uber-401,1.0,True
+setup_weight_45,simple-ou-402,1.0,True
+setup_weight_45,simple-uu-403,0.3333333333333333,False
+setup_weight_45,simple-ru-404,1.0,True
+setup_weight_45,simple-nu-405,0.3333333333333333,False
+setup_weight_45,max_damage-uber-406,0.0,False
+setup_weight_45,max_damage-ou-407,0.6666666666666666,True
+setup_weight_45,max_damage-uu-408,1.0,True
+setup_weight_45,max_damage-ru-409,1.0,True
+setup_weight_45,max_damage-nu-410,1.0,True
+setup_weight_45,random-uber-411,1.0,True
+setup_weight_45,random-ou-412,1.0,True
+setup_weight_45,random-uu-413,1.0,True
+setup_weight_45,random-ru-414,1.0,True
+setup_weight_45,random-nu-415,1.0,True

@@ -1,0 +1,16 @@
+config,opponent,winrate,beaten
+baseline,simple-uber-1,1.0,True
+baseline,simple-ou-2,1.0,True
+baseline,simple-uu-3,0.0,False
+baseline,simple-ru-4,1.0,True
+baseline,simple-nu-5,1.0,True
+baseline,max_damage-uber-6,1.0,True
+baseline,max_damage-ou-7,1.0,True
+baseline,max_damage-uu-8,1.0,True
+baseline,max_damage-ru-9,1.0,True
+baseline,max_damage-nu-10,1.0,True
+baseline,random-uber-11,1.0,True
+baseline,random-ou-12,1.0,True
+baseline,random-uu-13,1.0,True
+baseline,random-ru-14,1.0,True
+baseline,random-nu-15,1.0,True

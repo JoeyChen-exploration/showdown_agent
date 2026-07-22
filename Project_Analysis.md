@@ -54,6 +54,10 @@ showdown_agent/scripts/
 **班级竞赛**（额外加分，非主评分）：Swiss 轮次淘汰赛，最后 16 强打单败淘汰赛，第 1 名 5% 加分，
 往后递减到 Top 16 各 1%。
 
+**Report（40%，占比最大）**：这里只是简版摘要，完整的评分细则（report 页数分配建议、
+Design/Evaluation/Reflections 三部分具体要看什么、Swiss/Knockout 赛制细节）见
+[AssessmentDescription.md](AssessmentDescription.md)。
+
 ## 提交前的两道红线
 
 1. **禁止任何写盘代码**——`file_write_detection.py` 用 AST 扫描 `upi.py`，抓 `open(..., "w"/"a"/"x"/"+")`

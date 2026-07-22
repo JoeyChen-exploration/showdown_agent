@@ -1,0 +1,16 @@
+config,opponent,winrate,beaten
+switch_cost_0,simple-uber-701,1.0,True
+switch_cost_0,simple-ou-702,1.0,True
+switch_cost_0,simple-uu-703,1.0,True
+switch_cost_0,simple-ru-704,1.0,True
+switch_cost_0,simple-nu-705,1.0,True
+switch_cost_0,max_damage-uber-706,0.0,False
+switch_cost_0,max_damage-ou-707,1.0,True
+switch_cost_0,max_damage-uu-708,1.0,True
+switch_cost_0,max_damage-ru-709,1.0,True
+switch_cost_0,max_damage-nu-710,1.0,True
+switch_cost_0,random-uber-711,1.0,True
+switch_cost_0,random-ou-712,1.0,True
+switch_cost_0,random-uu-713,1.0,True
+switch_cost_0,random-ru-714,1.0,True
+switch_cost_0,random-nu-715,1.0,True

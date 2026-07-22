@@ -1,0 +1,16 @@
+config,opponent,winrate,beaten
+switch_defense_weight_30,simple-uber-501,1.0,True
+switch_defense_weight_30,simple-ou-502,0.6666666666666666,True
+switch_defense_weight_30,simple-uu-503,1.0,True
+switch_defense_weight_30,simple-ru-504,1.0,True
+switch_defense_weight_30,simple-nu-505,1.0,True
+switch_defense_weight_30,max_damage-uber-506,0.0,False
+switch_defense_weight_30,max_damage-ou-507,1.0,True
+switch_defense_weight_30,max_damage-uu-508,1.0,True
+switch_defense_weight_30,max_damage-ru-509,1.0,True
+switch_defense_weight_30,max_damage-nu-510,1.0,True
+switch_defense_weight_30,random-uber-511,1.0,True
+switch_defense_weight_30,random-ou-512,1.0,True
+switch_defense_weight_30,random-uu-513,1.0,True
+switch_defense_weight_30,random-ru-514,1.0,True
+switch_defense_weight_30,random-nu-515,1.0,True

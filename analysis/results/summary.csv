@@ -1,0 +1,10 @@
+config,rank,mark,beaten,total
+baseline,2,9.5,14,15
+no_hard_ko,3,9.0,13,15
+no_opening_script,2,9.5,14,15
+setup_weight_15,3,9.0,13,15
+setup_weight_45,4,8.5,12,15
+switch_defense_weight_30,2,9.5,14,15
+switch_defense_weight_90,2,9.5,14,15
+switch_cost_0,2,9.5,14,15
+switch_cost_50,3,9.0,13,15
