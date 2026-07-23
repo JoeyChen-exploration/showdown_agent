@@ -12,5 +12,5 @@ no_opening_script,random-uu,3,1.0,0.0,3
 no_opening_script,simple-nu,3,1.0,0.0,3
 no_opening_script,simple-ou,3,1.0,0.0,3
 no_opening_script,simple-ru,3,1.0,0.0,3
-no_opening_script,simple-uber,3,0.1111111111111111,0.19245008972987523,0
-no_opening_script,simple-uu,3,0.7777777777777778,0.1924500897298753,3
+no_opening_script,simple-uber,3,0.3333333333333333,0.0,0
+no_opening_script,simple-uu,3,0.8888888888888888,0.1924500897298753,3

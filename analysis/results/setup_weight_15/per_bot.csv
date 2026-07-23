@@ -1,7 +1,7 @@
 config,repeat,opponent,winrate,beaten
-setup_weight_15,0,simple-uber-901,0.6666666666666666,True
+setup_weight_15,0,simple-uber-901,1.0,True
 setup_weight_15,0,simple-ou-902,1.0,True
-setup_weight_15,0,simple-uu-903,0.6666666666666666,True
+setup_weight_15,0,simple-uu-903,1.0,True
 setup_weight_15,0,simple-ru-904,1.0,True
 setup_weight_15,0,simple-nu-905,1.0,True
 setup_weight_15,0,max_damage-uber-906,0.0,False
@@ -14,9 +14,9 @@ setup_weight_15,0,random-ou-912,1.0,True
 setup_weight_15,0,random-uu-913,1.0,True
 setup_weight_15,0,random-ru-914,1.0,True
 setup_weight_15,0,random-nu-915,1.0,True
-setup_weight_15,1,simple-uber-1001,1.0,True
+setup_weight_15,1,simple-uber-1001,0.6666666666666666,True
 setup_weight_15,1,simple-ou-1002,1.0,True
-setup_weight_15,1,simple-uu-1003,0.6666666666666666,True
+setup_weight_15,1,simple-uu-1003,1.0,True
 setup_weight_15,1,simple-ru-1004,1.0,True
 setup_weight_15,1,simple-nu-1005,1.0,True
 setup_weight_15,1,max_damage-uber-1006,0.0,False
@@ -24,12 +24,12 @@ setup_weight_15,1,max_damage-ou-1007,1.0,True
 setup_weight_15,1,max_damage-uu-1008,1.0,True
 setup_weight_15,1,max_damage-ru-1009,1.0,True
 setup_weight_15,1,max_damage-nu-1010,1.0,True
-setup_weight_15,1,random-uber-1011,1.0,True
+setup_weight_15,1,random-uber-1011,0.6666666666666666,True
 setup_weight_15,1,random-ou-1012,1.0,True
 setup_weight_15,1,random-uu-1013,1.0,True
 setup_weight_15,1,random-ru-1014,1.0,True
 setup_weight_15,1,random-nu-1015,1.0,True
-setup_weight_15,2,simple-uber-1101,1.0,True
+setup_weight_15,2,simple-uber-1101,0.3333333333333333,False
 setup_weight_15,2,simple-ou-1102,1.0,True
 setup_weight_15,2,simple-uu-1103,1.0,True
 setup_weight_15,2,simple-ru-1104,1.0,True
