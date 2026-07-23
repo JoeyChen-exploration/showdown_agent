@@ -2,7 +2,7 @@ config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
 switch_defense_weight_90,max_damage-nu,3,1.0,0.0,3
 switch_defense_weight_90,max_damage-ou,3,1.0,0.0,3
 switch_defense_weight_90,max_damage-ru,3,1.0,0.0,3
-switch_defense_weight_90,max_damage-uber,3,0.0,0.0,0
+switch_defense_weight_90,max_damage-uber,3,1.0,0.0,3
 switch_defense_weight_90,max_damage-uu,3,1.0,0.0,3
 switch_defense_weight_90,random-nu,3,1.0,0.0,3
 switch_defense_weight_90,random-ou,3,1.0,0.0,3
