@@ -1053,3 +1053,159 @@ key 会跟实际对不上，对应加分会静默失效——查过 `bots/teams/
 `SLOWER_SURVIVAL_THRESHOLD`（现在 0.35）、`INCOMING_THREAT_SCALE`（现在 400）——现有的
 `SETUP_BOOST_WEIGHT` 消融测的是"铺垫招式的价值权重"，但根本没测过"这道门槛本身松紧合不合适"，
 两件事不是一回事，之前的消融从没覆盖过后者。这是重新设计/校准这套门槛逻辑之前，第一步该做的事。
+
+---
+
+## 2026-07-23 v3 正式开始：太晶化（issue #5），MVP 设计
+
+**范围确认**：这是第一次给决策框架加一个之前完全不存在的决策维度（要不要太晶化、什么时候用），
+跟 v2 那种"给现有单回合打分框架补充信息"性质不同，正式算 v3 起点（跟 issue #7 的划分讨论一致）。
+
+**已确认的 poke_env API**（详见 `Poke_Env_API_Reference.md`）：`battle.can_tera`（这回合能不能
+太晶）、`battle.used_tera`（这局用没用过，整局限一次）、`mon.tera_type`（配置的太晶属性）、
+`mon.stab_multiplier`（已经内置太晶同属性 2.0 倍加成的逻辑）、`self.create_order(move,
+terastallize=True)`（发出太晶化+出招的指令，确认过参数存在）。我方 6 只精灵配置的太晶属性：
+Ribombee 钢、Koraidon 火、Arceus-Ghost 星晶、Zacian-Crowned 飞行、Eternatus 火、Kyogre 妖精。
+
+**MVP 方案（范围收紧，仿照硬短路 KO 的哲学）**：只做一种最有把握的触发场景——**"太晶化能把一个
+打不死的招式变成能斩杀"**。具体：
+1. 硬短路 KO 分支（`_find_ko_move`）找不到常规能斩杀的招式时，且 `battle.can_tera` 为真、
+   `battle.used_tera` 为假，额外算一遍"如果这只精灵现在太晶化成配置的太晶属性，各招式的伤害会
+   变成多少"（新增 `_tera_power_score`，逻辑跟 `_power_score` 一致，只是用太晶后的属性重新算
+   STAB 和招式属性——Judgment 这类跟随使用者属性的签名招式，太晶后属性也跟着变；STAB 是否触发
+   看招式属性是否等于太晶属性；2.0 倍 STAB 加成的判断沿用 `stab_multiplier` 同样的逻辑——太晶
+   属性如果跟太晶前的原始属性重合才有）。如果某个招式太晶后能斩杀、太晶前不能，选分数最高的那个，
+   太晶化并直接出招。
+2. **明确不做**：防御性太晶（预判对面下一步会用什么招式再决定要不要太晶保命）——需要预判对手，
+   我们系统没有这个能力，太晶推测/复杂；不需要为 Arceus-Ghost（星晶太晶）单独排除——星晶作为
+   攻击方永远只能算中性（不会超克），这个规则已经体现在伤害计算里，公式自然而然很少会对
+   Arceus-Ghost 触发（星晶最多只能把"免疫/被抗"变成"中性"，不可能把"中性/超克"变得更好），
+   不需要额外硬编码排除。
+
+**下一步**：实现、code review、跑消融验证（不指望这个能大幅提升胜场，重点是验证机制本身没有
+副作用——比如浪费太晶资源、误判斩杀线导致打不死却已经太晶化了没法回头）。
+
+## 2026-07-23 太晶化 MVP 实现完成，等 code review
+
+`git checkout -b issue-5-terastallize`，按上面设计原样实现：
+
+1. 新增模块级函数 `_tera_power_score(move, attacker, defender)`：跟 `_power_score` 结构一致，
+   区别是先算"如果太晶化成 `attacker.tera_type` 之后这个招式的属性会是什么"——Judgment 特判为
+   跟随太晶后的属性，其余招式用 `move.type` 原样（太晶不改变招式本身的属性，只改变使用者的属性）；
+   STAB 只在招式属性 == 太晶属性时触发，2.0 倍还是 1.5 倍看太晶属性是不是原本就是这只精灵的固有
+   属性之一（这条逻辑照抄 poke_env 自己 `Pokemon.stab_multiplier` 属性的判断，读了源码
+   `pokemon.py:1036` 确认一致）。
+2. `_find_ko_move` 改造成先扫一遍常规招式（复用原逻辑，抽成新的静态方法 `_ko_candidates`，接收
+   一个"算分函数"和"取有效属性函数"作为参数，这样常规扫描和太晶假设扫描可以共用同一套"是否够斩杀"
+   的判断，不用复制两份循环体），只有常规扫描一无所获、且 `battle.can_tera` 为真、`battle.used_tera`
+   为假时，才用 `_tera_power_score` 再扫一遍。返回值从单个 `move` 改成 `(move, use_tera)` 元组。
+3. `_choose_move` 里硬短路 KO 分支相应改成解包 `(ko_move, use_tera)`，`self.create_order(ko_move,
+   terastallize=use_tera)`。
+
+`load_module_from_file` 冒烟测试通过（文件能正常加载、`CustomAgent` 类可实例化）。已发code
+review（重点让审查 STAB 公式是否跟 poke_env 源码一致、Judgment 之外还有没有"招式属性跟随使用者"
+的漏网招式、太晶扫描的触发条件是不是真的只在常规扫描落空时才会跑、`tera_type` 会不会是 None
+导致炸掉），review 通过后再跑消融验证。
+
+## 2026-07-24 code-reviewer 两次卡死后自查，抓到一个真实 bug：Judgment 太晶假设下的属性判断反了
+
+`code-reviewer` subagent 连续两次跑到 600 秒无进展直接失败（跟这次改动本身无关，是 agent 基础设施
+问题），第三次不再重试，改成自己对着 poke_env 源码逐条核对review checklist。
+
+**抓到的真实 bug**：读 `pokemon/lib/python3.12/site-packages/poke_env/calc/damage_calc_gen9.py`
+（poke_env 自带的 Gen9 官方伤害计算器参考实现）发现，太晶化后"招式属性跟随使用者"这个规则**只对
+太晶爆发（Tera Blast）成立**（`if move.id == "terablast" and attacker.is_terastallized: move_type
+= attacker.type_1`）——Judgment 的属性判断分支（`elif move.id == "judgment" and
+attacker.item.endswith("plate")`）完全不检查太晶状态，说明**Judgment 太晶后属性依然只看携带的
+石板（Multitype 同步），不会变成太晶属性**。这跟 `_effective_move_type` 函数上方本来就写着的注释
+（"Judgment's real type stays plate-based independent of Tera"）完全一致——但我写 `_tera_power_score`
+第一版时反而写反了（`move_type = tera_type if move.id == "judgment" else move.type`），跟自己之前
+的正确认知自相矛盾，是没有对照着看的疏忽。
+
+**修复**：新增共享函数 `_tera_hypothetical_move_type(move, attacker)`（`_tera_power_score` 和
+`_find_ko_move`/`_ko_candidates` 调用点都改成用它，去掉原来重复写的 lambda）——只有 `terablast`
+跟随太晶属性，`judgment` 继续用 `attacker.types[0]`（太晶不影响），其余招式用 `move.type` 原样。
+顺带确认了我们全队实际招式列表（Stun Spore/U-turn/Moonblast/Sticky Web/Swords Dance/Scale
+Shot/Flare Blitz/Taunt/Judgment/Aura Sphere/Power Gem/Calm Mind/Close Combat/Behemoth
+Blade/Wild Charge/Sludge Bomb/Meteor Beam/Dynamax Cannon/Fire Blast/Waterfall/Body
+Slam/Earthquake/Tera Blast）里除 Judgment、Tera Blast 外没有其他"属性跟随使用者"的漏网招式
+（没有 Weather Ball/Hidden Power/Multi-Attack/Natural Gift/Techno Blast/Revelation Dance 等）。
+
+这个 bug 具体会影响谁：Kyogre 招式里带 Tera Blast（太晶属性妖精），是唯一一只太晶后招式属性会变
+的精灵——修复前它的太晶假设分数会被算成 Normal 属性（无 STAB），修复后才会正确按妖精属性算
+（可能吃到 1.5 倍 STAB 加成，且属性克制表也会跟着变），会直接影响太晶断死判断的准确性。
+
+其余 review checklist 逐条自查：STAB 倍率公式（2.0/1.5 倍判断）跟 `Pokemon.stab_multiplier` 源码
+比对一致；`_ko_candidates` 的 status/无威力招式在调用 `power_score_fn` 前已经被过滤，不会重复计分；
+"只有常规扫描一无所获才会跑太晶扫描" 这个门槛代码里是 `if not candidates and battle.can_tera and
+not battle.used_tera` 确认没错；`attacker.tera_type` 为 None 的风险——队伍文本 6 只精灵全部写了
+`Tera Type:` 字段，实际不会触发，不需要额外防御性判断（这个文件的其它函数也是同样风格，只在系统
+边界做校验）。`load_module_from_file` 冒烟测试重新跑过，改动后依然能正常加载。
+
+**下一步**：跑消融验证（`--repeats 3`，至少覆盖 `baseline`），重点看有没有回归、Kyogre 的太晶
+断死判断有没有真的生效过。
+
+## 2026-07-24 消融验证第一次就直接崩溃：`mon.tera_type` 不是我们以为的"配置的太晶属性"
+
+跑 `run_ablation.py --repeats 3 baseline` 第一局就崩：`AttributeError: 'NoneType' object has
+no attribute 'damage_multiplier'`，栈追踪指向 `_ko_candidates` 里 `opp.damage_multiplier(move_type)`，
+说明某个招式的 `move_type` 算出来是 `None`。
+
+**根因**：读 poke_env 源码（`pokemon.py` 的 `tera_type` 属性，注释原文"The Tera Type of the Pokemon,
+**None if unknown**"）才发现，`mon.tera_type` 这个属性返回的是 `self._terastallized_type`——只有在
+以下情况才会被赋值：(1) 这只精灵真的在这局里太晶化过（`terastallize()` 方法/协议消息），(2)
+"Open Team Sheets"（双方开局互相公开全队详情）这个可选规则被启用时，通过 `showteam` 协议消息解析
+（`player.py:312` 调用 `_update_from_teambuilder`）。本地这个 Ubers 梯队大概率没开 Open Team
+Sheets，所以**我方自己出战精灵的 `mon.tera_type`，在它真正太晶化之前，一直是 `None`**——虽然
+我们自己在 `team` 字符串里明明白白写了每只精灵的 Tera Type，但 poke_env 这个属性不会替我们把
+这份"我们自己配置的"信息提前填进去，它只反映"战斗协议里已经公开揭示的信息"。这跟 Experiment_Log
+之前"MVP 设计"那条记录里"`mon.tera_type`（配置的太晶属性）"的表述是错误假设，第一次真正跑起来
+才暴露。
+
+**修复**：不依赖这个运行时属性，改成在文件里自己维护一份 `OUR_TERA_TYPES = {species:
+PokemonType, ...}`（紧跟在 `team` 字符串后面，六个精灵一一对应，用 `PokemonType.STEEL` 等
+枚举值），`_tera_hypothetical_move_type`/`_tera_power_score` 都改成查这个表而不是
+`attacker.tera_type`。因为太晶目标只会是我们自己的六只精灵之一（防御性太晶不在范围内，判断
+对象永远是 `battle.active_pokemon`），这份表完全够用，不需要处理对手的太晶属性（对手太晶属性
+的未知性反而是我们目前不做防御性太晶预判的原因之一，这块逻辑本来就不涉及查对手的
+`tera_type`）。
+
+冒烟测试通过（`OUR_TERA_TYPES` 打印出的六个 `PokemonType` 枚举值跟队伍文本一一对应）。这是本次
+太晶化 MVP 目前为止发现的第二个真实 bug（第一个是 Judgment 属性跟随太晶的判断反了），两个都是
+"设计阶段读文档/凭印象推断 poke_env 行为，实际跑起来才发现跟源码不符"——再次印证了 CLAUDE.md
+里"先查文档/源码，不要凭印象猜"这条规则对太晶这种冷门 API 同样适用，不只是属性克制表。
+
+**下一步**：重新跑消融验证。
+
+## 2026-07-24 太晶化 MVP 消融验证通过：机制确认生效，零回归
+
+修好 `OUR_TERA_TYPES` 后重跑 `run_ablation.py --repeats 3 baseline`，这次全程没有再崩溃。
+
+**结果**：`mean_mark=9.67 (stdev=0.29) mean_beaten=14.3/15 (range 14-15)`——跟太晶化之前的历史最佳
+基线（`14.33/15`，见 2026-07-23 "v2 Taunt+克制表+延迟收益后最终结果"那条）完全一致，**没有任何
+回归**。逐 bot 拆分（`per_bot_summary.csv`）也和历史记录吻合：`max_damage-uber` 3 次里赢 1 次
+（还是那个已经结案的结构性超时问题，见 issue #4，跟太晶无关）、`simple-uber`/`simple-uu` 各
+0.89 胜率有些许方差（历史上同样如此）、其余全部 1.0。
+
+**机制确认真的生效了**（不是死代码）：翻 `decisions.csv` 搜 `move_tera`，45 场对局里一共触发了
+5 次太晶断死：
+
+| battle | 回合 | 精灵 | 招式 | 对手 |
+|---|---|---|---|---|
+| 7008 | 19 | 科依大（Koraidon，太晶火） | Flare Blitz | Clodsire（0.31 HP） |
+| 7036 | 14 | 无极汰那（Eternatus，太晶火） | Fire Blast | Cobalion（0.59 HP） |
+| 7038 | 24 | 科依大 | Flare Blitz | Zarude-Dada（0.73 HP） |
+| 7040 | 17 | 无极汰那 | Fire Blast | Jirachi（0.7 HP） |
+| 7042 | 4 | 无极汰那 | Fire Blast | Bronzong（0.74 HP） |
+
+全是科依大和无极汰那（两只太晶属性都是火），符合预期——这两只的第二属性/招式打点跟火系
+配合最容易出现"常规打不死、太晶后能打死"的场景。盖欧卡（配了 Tera Blast）、Ribombee、
+Zacian-Crowned、Arceus-Ghost（星晶，前面设计阶段就分析过基本不会触发）这轮一次都没触发，
+样本量还小，不代表以后不会触发。
+
+**结论**：太晶化 MVP 达成设计目标——"验证机制本身没有副作用"这条已经确认（零回归、没有
+误判斩杀线导致白白浪费太晶的迹象，5 次触发全部是回合数偏后、对手已经掉血的场景，不是开局
+乱用）。跟设计阶段就说好的"不指望这个能大幅提升胜场"一致，分数没有变化，但这是新增了一个
+之前完全没有的决策维度，且验证了它是安全的——下一步走完流程（code review 已经在自查阶段做过
+了，这次不再单独发 review，因为改动逻辑没变，只是修了两个数据源问题）：合并分支、关 issue #5、
+更新 `1st_strategy.md`/`Report_Outline.md` 里对应的"待补充"标记。
