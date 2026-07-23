@@ -56,6 +56,17 @@ CONFIGS = {
     "switch_defense_weight_90": {"SWITCH_DEFENSE_WEIGHT": 90.0},
     "switch_cost_0": {"SWITCH_COST": 0},
     "switch_cost_50": {"SWITCH_COST": 50},
+    # v2 constants (2026-07-23) - unlike the v1 constants above, these have never been
+    # through an ablation sweep, just set once at write time. Screening round to see if
+    # any of them are sensitive before spending a 3-repeat confirmation pass on them.
+    "counter_threshold_60": {"COUNTER_TABLE_THRESHOLD": 60.0},
+    "counter_threshold_150": {"COUNTER_TABLE_THRESHOLD": 150.0},
+    "counter_bonus_20": {"COUNTER_MATCH_BONUS": 20.0},
+    "counter_bonus_70": {"COUNTER_MATCH_BONUS": 70.0},
+    "taunt_base_30": {"TAUNT_ANTI_STALL_BASE": 30.0},
+    "taunt_perboost_20": {"TAUNT_ANTI_STALL_PER_BOOST": 20.0},
+    "hazard_value_10": {"HAZARD_VALUE_PER_FUTURE_SWITCH_IN": 10.0},
+    "hazard_value_30": {"HAZARD_VALUE_PER_FUTURE_SWITCH_IN": 30.0},
 }
 
 DECISION_LOG_FIELDS = [
