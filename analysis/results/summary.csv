@@ -1,8 +1,2 @@
 config,repeats,mean_mark,stdev_mark,mean_beaten,min_beaten,max_beaten,total
 baseline,3,9.666666666666666,0.28867513459481287,14.333333333333334,14,15,15
-no_hard_ko,3,9.5,0.0,14,14,14,15
-no_opening_script,3,9.0,0.0,13,13,13,15
-setup_weight_15,3,9.333333333333334,0.28867513459481287,13.666666666666666,13,14,15
-setup_weight_45,3,9.5,0.0,14,14,14,15
-switch_cost_0,3,9.5,0.0,14,14,14,15
-switch_cost_50,3,9.5,0.0,14,14,14,15

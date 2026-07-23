@@ -52,7 +52,7 @@
 - **Flame Charge 火花冲锋（应为"蓄能爆炎"）**：火系物理，威力 50，命中后**自己速度 +1**。
 - **Close Combat 近身战**：格斗系物理，威力 120，命中后自己防御/特防各 -1。
 
-**这一档要点**：`Zacian-Crowned`/`Koraidon` 剑舞一次起飞就很难拦；`Deoxys-Speed` 开局先手电磁波+钉子最烦人，能先手秒掉或者免疫瘫痪最好；`Arceus-Fairy` 冥想+回血组合拖久了会滚雪球，见面尽量强攻不要磨。
+**这一档要点**：`Zacian-Crowned`/`Koraidon` 剑舞一次起飞就很难拦；`Deoxys-Speed` 开局先手电磁波+钉子最烦人，能先手秒掉或者免疫瘫痪最好；`Arceus-Fairy` 冥想+回血组合理论上拖久了会滚雪球，**但这条只适用于真人/会做判断的对手**——`bots/max_damage.py` 的源码是纯粹"选当前威力最高的招式"（`max(available_moves, key=lambda m: m.base_power)`），冥想/回血威力都是 0，只要 Judgment（100 威力）还有 PP，`max_damage-uber` 这个具体 bot 永远不会用冥想或回血，叠盾/回血这套威胁对它不成立。`max_damage-uber` 打得久单纯是双方磨伤害磨得慢，不是叠盾——这个区分 2026-07-23 验证过（Taunt 反叠盾修复对这个对手完全没有效果，才回头查的 bot 源码），`simple`/`random` 两种风格没有查过，不确定是否也是这个结论。
 
 ---
 
