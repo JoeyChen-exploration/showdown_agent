@@ -2,7 +2,7 @@ config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
 switch_defense_weight_30,max_damage-nu,3,1.0,0.0,3
 switch_defense_weight_30,max_damage-ou,3,1.0,0.0,3
 switch_defense_weight_30,max_damage-ru,3,1.0,0.0,3
-switch_defense_weight_30,max_damage-uber,3,0.3333333333333333,0.5773502691896257,1
+switch_defense_weight_30,max_damage-uber,3,1.0,0.0,3
 switch_defense_weight_30,max_damage-uu,3,1.0,0.0,3
 switch_defense_weight_30,random-nu,3,1.0,0.0,3
 switch_defense_weight_30,random-ou,3,1.0,0.0,3
@@ -10,7 +10,7 @@ switch_defense_weight_30,random-ru,3,1.0,0.0,3
 switch_defense_weight_30,random-uber,3,1.0,0.0,3
 switch_defense_weight_30,random-uu,3,1.0,0.0,3
 switch_defense_weight_30,simple-nu,3,1.0,0.0,3
-switch_defense_weight_30,simple-ou,3,0.7777777777777778,0.1924500897298753,3
+switch_defense_weight_30,simple-ou,3,1.0,0.0,3
 switch_defense_weight_30,simple-ru,3,1.0,0.0,3
-switch_defense_weight_30,simple-uber,3,0.5555555555555556,0.19245008972987523,2
-switch_defense_weight_30,simple-uu,3,0.7777777777777778,0.1924500897298753,3
+switch_defense_weight_30,simple-uber,3,0.8888888888888888,0.1924500897298753,3
+switch_defense_weight_30,simple-uu,3,1.0,0.0,3

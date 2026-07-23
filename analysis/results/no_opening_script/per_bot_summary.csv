@@ -2,7 +2,7 @@ config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
 no_opening_script,max_damage-nu,3,1.0,0.0,3
 no_opening_script,max_damage-ou,3,1.0,0.0,3
 no_opening_script,max_damage-ru,3,1.0,0.0,3
-no_opening_script,max_damage-uber,3,0.0,0.0,0
+no_opening_script,max_damage-uber,3,1.0,0.0,3
 no_opening_script,max_damage-uu,3,1.0,0.0,3
 no_opening_script,random-nu,3,1.0,0.0,3
 no_opening_script,random-ou,3,1.0,0.0,3
@@ -12,5 +12,5 @@ no_opening_script,random-uu,3,1.0,0.0,3
 no_opening_script,simple-nu,3,1.0,0.0,3
 no_opening_script,simple-ou,3,1.0,0.0,3
 no_opening_script,simple-ru,3,1.0,0.0,3
-no_opening_script,simple-uber,3,0.1111111111111111,0.19245008972987523,0
+no_opening_script,simple-uber,3,0.4444444444444444,0.19245008972987523,1
 no_opening_script,simple-uu,3,1.0,0.0,3
