@@ -23,6 +23,12 @@ showdown_agent/scripts/client_secrets.json
 showdown_agent/scripts/replays/
 showdown_agent/scripts/results/
 
+# raw per-turn protocol dumps from analysis/run_ablation.py and trace_matchup.py -
+# huge (tens of thousands of lines per config) and mostly useful for one-off deep dives,
+# unlike decisions.csv/per_bot*.csv/summary.csv which stay small and are what the report
+# actually cites, so those remain tracked.
+analysis/results/**/events.csv
+
 # ignore everything inside players/
 showdown_agent/scripts/players/*
 
