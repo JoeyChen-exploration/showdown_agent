@@ -1084,3 +1084,63 @@ Ribombee 钢、Koraidon 火、Arceus-Ghost 星晶、Zacian-Crowned 飞行、Eter
 
 **下一步**：实现、code review、跑消融验证（不指望这个能大幅提升胜场，重点是验证机制本身没有
 副作用——比如浪费太晶资源、误判斩杀线导致打不死却已经太晶化了没法回头）。
+
+## 2026-07-23 太晶化 MVP 实现完成，等 code review
+
+`git checkout -b issue-5-terastallize`，按上面设计原样实现：
+
+1. 新增模块级函数 `_tera_power_score(move, attacker, defender)`：跟 `_power_score` 结构一致，
+   区别是先算"如果太晶化成 `attacker.tera_type` 之后这个招式的属性会是什么"——Judgment 特判为
+   跟随太晶后的属性，其余招式用 `move.type` 原样（太晶不改变招式本身的属性，只改变使用者的属性）；
+   STAB 只在招式属性 == 太晶属性时触发，2.0 倍还是 1.5 倍看太晶属性是不是原本就是这只精灵的固有
+   属性之一（这条逻辑照抄 poke_env 自己 `Pokemon.stab_multiplier` 属性的判断，读了源码
+   `pokemon.py:1036` 确认一致）。
+2. `_find_ko_move` 改造成先扫一遍常规招式（复用原逻辑，抽成新的静态方法 `_ko_candidates`，接收
+   一个"算分函数"和"取有效属性函数"作为参数，这样常规扫描和太晶假设扫描可以共用同一套"是否够斩杀"
+   的判断，不用复制两份循环体），只有常规扫描一无所获、且 `battle.can_tera` 为真、`battle.used_tera`
+   为假时，才用 `_tera_power_score` 再扫一遍。返回值从单个 `move` 改成 `(move, use_tera)` 元组。
+3. `_choose_move` 里硬短路 KO 分支相应改成解包 `(ko_move, use_tera)`，`self.create_order(ko_move,
+   terastallize=use_tera)`。
+
+`load_module_from_file` 冒烟测试通过（文件能正常加载、`CustomAgent` 类可实例化）。已发code
+review（重点让审查 STAB 公式是否跟 poke_env 源码一致、Judgment 之外还有没有"招式属性跟随使用者"
+的漏网招式、太晶扫描的触发条件是不是真的只在常规扫描落空时才会跑、`tera_type` 会不会是 None
+导致炸掉），review 通过后再跑消融验证。
+
+## 2026-07-24 code-reviewer 两次卡死后自查，抓到一个真实 bug：Judgment 太晶假设下的属性判断反了
+
+`code-reviewer` subagent 连续两次跑到 600 秒无进展直接失败（跟这次改动本身无关，是 agent 基础设施
+问题），第三次不再重试，改成自己对着 poke_env 源码逐条核对review checklist。
+
+**抓到的真实 bug**：读 `pokemon/lib/python3.12/site-packages/poke_env/calc/damage_calc_gen9.py`
+（poke_env 自带的 Gen9 官方伤害计算器参考实现）发现，太晶化后"招式属性跟随使用者"这个规则**只对
+太晶爆发（Tera Blast）成立**（`if move.id == "terablast" and attacker.is_terastallized: move_type
+= attacker.type_1`）——Judgment 的属性判断分支（`elif move.id == "judgment" and
+attacker.item.endswith("plate")`）完全不检查太晶状态，说明**Judgment 太晶后属性依然只看携带的
+石板（Multitype 同步），不会变成太晶属性**。这跟 `_effective_move_type` 函数上方本来就写着的注释
+（"Judgment's real type stays plate-based independent of Tera"）完全一致——但我写 `_tera_power_score`
+第一版时反而写反了（`move_type = tera_type if move.id == "judgment" else move.type`），跟自己之前
+的正确认知自相矛盾，是没有对照着看的疏忽。
+
+**修复**：新增共享函数 `_tera_hypothetical_move_type(move, attacker)`（`_tera_power_score` 和
+`_find_ko_move`/`_ko_candidates` 调用点都改成用它，去掉原来重复写的 lambda）——只有 `terablast`
+跟随太晶属性，`judgment` 继续用 `attacker.types[0]`（太晶不影响），其余招式用 `move.type` 原样。
+顺带确认了我们全队实际招式列表（Stun Spore/U-turn/Moonblast/Sticky Web/Swords Dance/Scale
+Shot/Flare Blitz/Taunt/Judgment/Aura Sphere/Power Gem/Calm Mind/Close Combat/Behemoth
+Blade/Wild Charge/Sludge Bomb/Meteor Beam/Dynamax Cannon/Fire Blast/Waterfall/Body
+Slam/Earthquake/Tera Blast）里除 Judgment、Tera Blast 外没有其他"属性跟随使用者"的漏网招式
+（没有 Weather Ball/Hidden Power/Multi-Attack/Natural Gift/Techno Blast/Revelation Dance 等）。
+
+这个 bug 具体会影响谁：Kyogre 招式里带 Tera Blast（太晶属性妖精），是唯一一只太晶后招式属性会变
+的精灵——修复前它的太晶假设分数会被算成 Normal 属性（无 STAB），修复后才会正确按妖精属性算
+（可能吃到 1.5 倍 STAB 加成，且属性克制表也会跟着变），会直接影响太晶断死判断的准确性。
+
+其余 review checklist 逐条自查：STAB 倍率公式（2.0/1.5 倍判断）跟 `Pokemon.stab_multiplier` 源码
+比对一致；`_ko_candidates` 的 status/无威力招式在调用 `power_score_fn` 前已经被过滤，不会重复计分；
+"只有常规扫描一无所获才会跑太晶扫描" 这个门槛代码里是 `if not candidates and battle.can_tera and
+not battle.used_tera` 确认没错；`attacker.tera_type` 为 None 的风险——队伍文本 6 只精灵全部写了
+`Tera Type:` 字段，实际不会触发，不需要额外防御性判断（这个文件的其它函数也是同样风格，只在系统
+边界做校验）。`load_module_from_file` 冒烟测试重新跑过，改动后依然能正常加载。
+
+**下一步**：跑消融验证（`--repeats 3`，至少覆盖 `baseline`），重点看有没有回归、Kyogre 的太晶
+断死判断有没有真的生效过。
