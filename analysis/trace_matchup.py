@@ -1,6 +1,6 @@
 """
 Runs a single player-vs-bot matchup (Bo3) for one ablation config against one opponent,
-to drill into *why* a config wins/loses that specific matchup (see Ablation_Study_v1.md's
+to drill into *why* a config wins/loses that specific matchup (see Ablation_Study.md's
 "simple-uu 摇摆" observation / GitHub issue #6). Not part of the graded submission - free
 to read/write files, same as run_ablation.py.
 

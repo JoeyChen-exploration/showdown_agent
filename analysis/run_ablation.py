@@ -14,7 +14,7 @@ Usage (from the repo root, with the local Showdown server running):
 
 With no config names, runs every configuration in CONFIGS. --repeats defaults to 1
 (fast single-run screening, e.g. to find which knobs even matter - see
-Ablation_Study_v1.md for the screening round this was built for). Once a subset of
+Ablation_Study.md for the screening round this was built for). Once a subset of
 configs looks sensitive, re-run just those with --repeats 3 (or more) to average out
 noise before trusting which value is actually better - a single run is not reliable
 enough on its own (see GitHub issue #2).
