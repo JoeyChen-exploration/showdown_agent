@@ -1,0 +1,16 @@
+config,repeat,opponent,winrate,beaten
+hazard_value_10,0,simple-uber-601,0.6666666666666666,True
+hazard_value_10,0,simple-ou-602,1.0,True
+hazard_value_10,0,simple-uu-603,1.0,True
+hazard_value_10,0,simple-ru-604,1.0,True
+hazard_value_10,0,simple-nu-605,1.0,True
+hazard_value_10,0,max_damage-uber-606,0.0,False
+hazard_value_10,0,max_damage-ou-607,1.0,True
+hazard_value_10,0,max_damage-uu-608,1.0,True
+hazard_value_10,0,max_damage-ru-609,1.0,True
+hazard_value_10,0,max_damage-nu-610,1.0,True
+hazard_value_10,0,random-uber-611,1.0,True
+hazard_value_10,0,random-ou-612,1.0,True
+hazard_value_10,0,random-uu-613,1.0,True
+hazard_value_10,0,random-ru-614,1.0,True
+hazard_value_10,0,random-nu-615,1.0,True

@@ -1,0 +1,16 @@
+config,repeat,opponent,winrate,beaten
+taunt_perboost_20,0,simple-uber-501,0.6666666666666666,True
+taunt_perboost_20,0,simple-ou-502,1.0,True
+taunt_perboost_20,0,simple-uu-503,1.0,True
+taunt_perboost_20,0,simple-ru-504,1.0,True
+taunt_perboost_20,0,simple-nu-505,1.0,True
+taunt_perboost_20,0,max_damage-uber-506,0.0,False
+taunt_perboost_20,0,max_damage-ou-507,1.0,True
+taunt_perboost_20,0,max_damage-uu-508,1.0,True
+taunt_perboost_20,0,max_damage-ru-509,1.0,True
+taunt_perboost_20,0,max_damage-nu-510,1.0,True
+taunt_perboost_20,0,random-uber-511,1.0,True
+taunt_perboost_20,0,random-ou-512,1.0,True
+taunt_perboost_20,0,random-uu-513,1.0,True
+taunt_perboost_20,0,random-ru-514,1.0,True
+taunt_perboost_20,0,random-nu-515,1.0,True

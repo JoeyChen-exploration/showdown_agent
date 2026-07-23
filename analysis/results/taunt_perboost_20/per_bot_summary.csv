@@ -1,0 +1,16 @@
+config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
+taunt_perboost_20,max_damage-nu,1,1.0,0.0,1
+taunt_perboost_20,max_damage-ou,1,1.0,0.0,1
+taunt_perboost_20,max_damage-ru,1,1.0,0.0,1
+taunt_perboost_20,max_damage-uber,1,0.0,0.0,0
+taunt_perboost_20,max_damage-uu,1,1.0,0.0,1
+taunt_perboost_20,random-nu,1,1.0,0.0,1
+taunt_perboost_20,random-ou,1,1.0,0.0,1
+taunt_perboost_20,random-ru,1,1.0,0.0,1
+taunt_perboost_20,random-uber,1,1.0,0.0,1
+taunt_perboost_20,random-uu,1,1.0,0.0,1
+taunt_perboost_20,simple-nu,1,1.0,0.0,1
+taunt_perboost_20,simple-ou,1,1.0,0.0,1
+taunt_perboost_20,simple-ru,1,1.0,0.0,1
+taunt_perboost_20,simple-uber,1,0.6666666666666666,0.0,1
+taunt_perboost_20,simple-uu,1,1.0,0.0,1

@@ -1,0 +1,16 @@
+config,repeat,opponent,winrate,beaten
+counter_bonus_70,0,simple-uber-301,0.6666666666666666,True
+counter_bonus_70,0,simple-ou-302,1.0,True
+counter_bonus_70,0,simple-uu-303,1.0,True
+counter_bonus_70,0,simple-ru-304,1.0,True
+counter_bonus_70,0,simple-nu-305,1.0,True
+counter_bonus_70,0,max_damage-uber-306,0.0,False
+counter_bonus_70,0,max_damage-ou-307,1.0,True
+counter_bonus_70,0,max_damage-uu-308,1.0,True
+counter_bonus_70,0,max_damage-ru-309,1.0,True
+counter_bonus_70,0,max_damage-nu-310,1.0,True
+counter_bonus_70,0,random-uber-311,1.0,True
+counter_bonus_70,0,random-ou-312,1.0,True
+counter_bonus_70,0,random-uu-313,1.0,True
+counter_bonus_70,0,random-ru-314,1.0,True
+counter_bonus_70,0,random-nu-315,1.0,True

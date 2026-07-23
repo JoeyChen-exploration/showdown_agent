@@ -1,0 +1,16 @@
+config,repeat,opponent,winrate,beaten
+taunt_base_30,0,simple-uber-401,0.3333333333333333,False
+taunt_base_30,0,simple-ou-402,1.0,True
+taunt_base_30,0,simple-uu-403,1.0,True
+taunt_base_30,0,simple-ru-404,1.0,True
+taunt_base_30,0,simple-nu-405,1.0,True
+taunt_base_30,0,max_damage-uber-406,0.0,False
+taunt_base_30,0,max_damage-ou-407,1.0,True
+taunt_base_30,0,max_damage-uu-408,1.0,True
+taunt_base_30,0,max_damage-ru-409,1.0,True
+taunt_base_30,0,max_damage-nu-410,1.0,True
+taunt_base_30,0,random-uber-411,1.0,True
+taunt_base_30,0,random-ou-412,1.0,True
+taunt_base_30,0,random-uu-413,1.0,True
+taunt_base_30,0,random-ru-414,1.0,True
+taunt_base_30,0,random-nu-415,1.0,True

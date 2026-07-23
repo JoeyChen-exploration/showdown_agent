@@ -1,0 +1,16 @@
+config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
+hazard_value_30,max_damage-nu,1,1.0,0.0,1
+hazard_value_30,max_damage-ou,1,1.0,0.0,1
+hazard_value_30,max_damage-ru,1,1.0,0.0,1
+hazard_value_30,max_damage-uber,1,0.0,0.0,0
+hazard_value_30,max_damage-uu,1,1.0,0.0,1
+hazard_value_30,random-nu,1,1.0,0.0,1
+hazard_value_30,random-ou,1,1.0,0.0,1
+hazard_value_30,random-ru,1,1.0,0.0,1
+hazard_value_30,random-uber,1,1.0,0.0,1
+hazard_value_30,random-uu,1,1.0,0.0,1
+hazard_value_30,simple-nu,1,1.0,0.0,1
+hazard_value_30,simple-ou,1,1.0,0.0,1
+hazard_value_30,simple-ru,1,1.0,0.0,1
+hazard_value_30,simple-uber,1,1.0,0.0,1
+hazard_value_30,simple-uu,1,1.0,0.0,1

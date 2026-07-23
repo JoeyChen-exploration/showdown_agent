@@ -909,3 +909,28 @@ key 会跟实际对不上，对应加分会静默失效——查过 `bots/teams/
 2. `max_damage-uber` 的超时问题正式认定为当前决策逻辑范式下无法解决的结构性损失，不再单独立项
    尝试解决，除非有全新思路。
 3. 数据源已经是当前代码的完整 7 组消融，`analysis/figures/ablation_mean_beaten.png` 已重新生成。
+
+---
+
+## 2026-07-23 v2 新常量首次消融筛选，`max_damage-uber` 八轮以来第一次被真正打赢
+
+**背景**：v2 加的三个新能力（Taunt 反叠盾、克制对照表、延迟收益打分）用的常量都只是写代码时定的
+初始值，从没做过消融扫描。用户要求补上这一步，跟 v1 那几个常量同等对待。给 `analysis/run_ablation.py`
+的 `CONFIGS` 加了 8 组新配置（`COUNTER_TABLE_THRESHOLD`/`COUNTER_MATCH_BONUS`/`TAUNT_ANTI_STALL_BASE`/
+`TAUNT_ANTI_STALL_PER_BOOST`/`HAZARD_VALUE_PER_FUTURE_SWITCH_IN` 各测两侧邻近值），先跑一轮
+单次筛选（issue #8）。
+
+**结果**：6 组都停在正常的单次 14/15 水平，没有特别信号。两组例外：
+- **`counter_threshold_60`（`COUNTER_TABLE_THRESHOLD` 100→60）打出 15/15 满分**——查了
+  `per_bot.csv`，`max_damage-uber` 这场 `winrate=1.0`，**这是连续八轮消融以来，第一次有
+  非 `baseline` 之外的配置真正赢下这场**，而且不是险胜。再查回合数：三局全部在**第 14 回合**
+  结束，远低于这场历史上常见的 39-42 回合。降低克制对照表的门槛（意味着更多对手精灵会被标记为
+  "有对应克制手段"、触发换人加分的场景变多）看起来让这场打得更快更果断，直接避开了超时。
+- `taunt_base_30`（`TAUNT_ANTI_STALL_BASE` 60→30）掉到 13/15，方向不明确，需要确认是否真实。
+
+**注意（方法论）**：这仍然只是单次筛选结果，`max_damage-uber` 历史上方差极大（`baseline` 自己
+偶尔赢这场时标准差就有 0.58），不能因为一次 15/15 就下结论——正在跑 3 次重跑确认
+`counter_threshold_60`/`taunt_base_30` 这两组信号是否站得住。
+
+**下一步**：等 3 次重跑确认结果，如果 `counter_threshold_60` 真的稳定解决 `max_damage-uber`，
+这会推翻"这是当前算法范式解决不了的结构性问题"这个刚下不久的结论——需要重新看待。

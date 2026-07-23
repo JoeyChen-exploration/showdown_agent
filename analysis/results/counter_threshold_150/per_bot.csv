@@ -1,0 +1,16 @@
+config,repeat,opponent,winrate,beaten
+counter_threshold_150,0,simple-uber-101,1.0,True
+counter_threshold_150,0,simple-ou-102,1.0,True
+counter_threshold_150,0,simple-uu-103,1.0,True
+counter_threshold_150,0,simple-ru-104,1.0,True
+counter_threshold_150,0,simple-nu-105,1.0,True
+counter_threshold_150,0,max_damage-uber-106,0.0,False
+counter_threshold_150,0,max_damage-ou-107,1.0,True
+counter_threshold_150,0,max_damage-uu-108,1.0,True
+counter_threshold_150,0,max_damage-ru-109,1.0,True
+counter_threshold_150,0,max_damage-nu-110,1.0,True
+counter_threshold_150,0,random-uber-111,1.0,True
+counter_threshold_150,0,random-ou-112,1.0,True
+counter_threshold_150,0,random-uu-113,1.0,True
+counter_threshold_150,0,random-ru-114,1.0,True
+counter_threshold_150,0,random-nu-115,1.0,True

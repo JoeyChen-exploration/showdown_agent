@@ -1,0 +1,16 @@
+config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
+counter_threshold_60,max_damage-nu,1,1.0,0.0,1
+counter_threshold_60,max_damage-ou,1,1.0,0.0,1
+counter_threshold_60,max_damage-ru,1,1.0,0.0,1
+counter_threshold_60,max_damage-uber,1,1.0,0.0,1
+counter_threshold_60,max_damage-uu,1,1.0,0.0,1
+counter_threshold_60,random-nu,1,1.0,0.0,1
+counter_threshold_60,random-ou,1,1.0,0.0,1
+counter_threshold_60,random-ru,1,1.0,0.0,1
+counter_threshold_60,random-uber,1,1.0,0.0,1
+counter_threshold_60,random-uu,1,1.0,0.0,1
+counter_threshold_60,simple-nu,1,1.0,0.0,1
+counter_threshold_60,simple-ou,1,1.0,0.0,1
+counter_threshold_60,simple-ru,1,1.0,0.0,1
+counter_threshold_60,simple-uber,1,0.6666666666666666,0.0,1
+counter_threshold_60,simple-uu,1,1.0,0.0,1
