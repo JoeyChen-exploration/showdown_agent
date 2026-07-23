@@ -1,5 +1,5 @@
 config,repeat,opponent,winrate,beaten
-setup_weight_45,0,simple-uber-1201,0.6666666666666666,True
+setup_weight_45,0,simple-uber-1201,1.0,True
 setup_weight_45,0,simple-ou-1202,1.0,True
 setup_weight_45,0,simple-uu-1203,1.0,True
 setup_weight_45,0,simple-ru-1204,1.0,True
@@ -16,7 +16,7 @@ setup_weight_45,0,random-ru-1214,1.0,True
 setup_weight_45,0,random-nu-1215,1.0,True
 setup_weight_45,1,simple-uber-1301,1.0,True
 setup_weight_45,1,simple-ou-1302,1.0,True
-setup_weight_45,1,simple-uu-1303,1.0,True
+setup_weight_45,1,simple-uu-1303,0.6666666666666666,True
 setup_weight_45,1,simple-ru-1304,1.0,True
 setup_weight_45,1,simple-nu-1305,1.0,True
 setup_weight_45,1,max_damage-uber-1306,0.0,False

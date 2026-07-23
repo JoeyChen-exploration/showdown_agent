@@ -1,7 +1,7 @@
 config,repeat,opponent,winrate,beaten
 switch_cost_50,0,simple-uber-1801,1.0,True
 switch_cost_50,0,simple-ou-1802,1.0,True
-switch_cost_50,0,simple-uu-1803,0.6666666666666666,True
+switch_cost_50,0,simple-uu-1803,1.0,True
 switch_cost_50,0,simple-ru-1804,1.0,True
 switch_cost_50,0,simple-nu-1805,1.0,True
 switch_cost_50,0,max_damage-uber-1806,0.0,False

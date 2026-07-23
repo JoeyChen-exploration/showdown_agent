@@ -1,5 +1,5 @@
 config,repeat,opponent,winrate,beaten
-baseline,0,simple-uber-1,0.6666666666666666,True
+baseline,0,simple-uber-1,1.0,True
 baseline,0,simple-ou-2,1.0,True
 baseline,0,simple-uu-3,1.0,True
 baseline,0,simple-ru-4,1.0,True

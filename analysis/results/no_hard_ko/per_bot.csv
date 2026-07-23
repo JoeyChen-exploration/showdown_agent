@@ -1,5 +1,5 @@
 config,repeat,opponent,winrate,beaten
-no_hard_ko,0,simple-uber-301,0.6666666666666666,True
+no_hard_ko,0,simple-uber-301,1.0,True
 no_hard_ko,0,simple-ou-302,1.0,True
 no_hard_ko,0,simple-uu-303,1.0,True
 no_hard_ko,0,simple-ru-304,1.0,True
@@ -18,15 +18,15 @@ no_hard_ko,1,simple-uber-401,1.0,True
 no_hard_ko,1,simple-ou-402,1.0,True
 no_hard_ko,1,simple-uu-403,1.0,True
 no_hard_ko,1,simple-ru-404,1.0,True
-no_hard_ko,1,simple-nu-405,0.6666666666666666,True
+no_hard_ko,1,simple-nu-405,1.0,True
 no_hard_ko,1,max_damage-uber-406,0.0,False
 no_hard_ko,1,max_damage-ou-407,1.0,True
 no_hard_ko,1,max_damage-uu-408,1.0,True
 no_hard_ko,1,max_damage-ru-409,1.0,True
 no_hard_ko,1,max_damage-nu-410,1.0,True
-no_hard_ko,1,random-uber-411,0.6666666666666666,True
+no_hard_ko,1,random-uber-411,1.0,True
 no_hard_ko,1,random-ou-412,1.0,True
-no_hard_ko,1,random-uu-413,1.0,True
+no_hard_ko,1,random-uu-413,0.6666666666666666,True
 no_hard_ko,1,random-ru-414,1.0,True
 no_hard_ko,1,random-nu-415,1.0,True
 no_hard_ko,2,simple-uber-501,0.6666666666666666,True
@@ -43,4 +43,4 @@ no_hard_ko,2,random-uber-511,1.0,True
 no_hard_ko,2,random-ou-512,1.0,True
 no_hard_ko,2,random-uu-513,1.0,True
 no_hard_ko,2,random-ru-514,1.0,True
-no_hard_ko,2,random-nu-515,1.0,True
+no_hard_ko,2,random-nu-515,0.6666666666666666,True
