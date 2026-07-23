@@ -91,7 +91,7 @@ wche652 ranked #15 with a mark of 1.0 (1/15 bots beaten)
 
 ## 2026-07-21 v1 规则系统上线（硬短路 KO + 单回合价值打分 + Ribombee 开局脚本）
 
-**目标 / 假设**：把 `_choose_move` 从随机换成 `1st_strategy.md` 里设计好的 v1 规则系统，验证是否能把
+**目标 / 假设**：把 `_choose_move` 从随机换成 `bots_strategy.md` 里设计好的 v1 规则系统，验证是否能把
 `max_damage`/`random` 档的胜率从"看运气"变成"稳定拿下"，并看看 `simple` 档能不能开始破防。
 
 **改动**：
@@ -101,7 +101,7 @@ wche652 ranked #15 with a mark of 1.0 (1/15 bots beaten)
   - 硬短路规则：这回合有招式能斩杀对面就直接用（多个可斩杀选项里优先选没反作用力的）。
   - Ribombee 固定开局脚本：第 1 回合无脑放 Sticky Web；第 2 回合按"对面是草系→直接 U-turn / 否则查换人评分决定 U-turn 还是放 Stun Spore"。
   - 通用单回合价值打分：换人评分（进攻端 `_power_score` 最大值 - 防御端类型倍率 × 60），铺垫招式打分（强化幅度 × 速度感知的"扛不扛得住"存活系数），其余伤害招式按 `base_power × STAB × 属性倍率` 打分，所有合法动作统一比较取最高分。
-  - 太晶（Tera）本版不触发，按 `1st_strategy.md` 里"明确延后到 v2"的决定。
+  - 太晶（Tera）本版不触发，按 `bots_strategy.md` 里"明确延后到 v2"的决定。
   - `_incoming_threat_score`/`_power_score` 都是简化启发式（没用 poke_env 自带的 `calc.calculate_damage` 精确伤害计算器，因为那个函数要求双方 stats 完整已知，对手真实 EV/性格未知时用不了），本质是"base_power × STAB × 属性倍率"这个相对打分，不是真实伤害百分比，`_survivability_factor` 里 `/400` 这个换算常数是拍脑袋定的粗略校准，不是精确值。
 
 **结果**：
@@ -128,7 +128,7 @@ wche652 ranked #3 with a mark of 9.0 (13/15 bots beaten)
 
 **下一步**：
 1. 排查 `simple-ou`/`simple-uu` 具体输在哪个环节（建议看 `replays/wche652/` 里这两场的录像）。
-2. 补 `1st_strategy.md` 里还没细化的部分：打分公式权重的进一步校准、Arceus-Ghost/Eternatus 的角色定位。
+2. 补 `bots_strategy.md` 里还没细化的部分：打分公式权重的进一步校准、Arceus-Ghost/Eternatus 的角色定位。
 3. 视情况决定要不要开始设计 v2 的太晶（Tera）触发逻辑。
 
 ---
@@ -227,7 +227,7 @@ python analysis/run_ablation.py baseline
 补上了"光靠实跑验证覆盖不到的角落"。
 
 **下一步**：
-1. `_find_ko_move` 不看威力这个问题留到下一个 version 再改（已记进 `1st_strategy.md` 待细化清单）。
+1. `_find_ko_move` 不看威力这个问题留到下一个 version 再改（已记进 `bots_strategy.md` 待细化清单）。
 2. 重新跑全部 9 组消融配置（这次命名冲突和报错处理都修好了）。
 
 ---
@@ -414,7 +414,7 @@ defense_risk = max((candidate.damage_multiplier(t) for t in opponent.types if t)
 ## 2026-07-23 v1 遗留的另外两个已知 bug 一起修：对手速度估算、KO 判断威力盲区
 
 **目标 / 假设**：`_switch_score` 那个方向反的 bug 修完之后，用户提出"既然发现了一个 bug，就把 v1
-现存的已知 bug 一次修完，严谨一点，再重新跑一遍消融"，不要修一个跑一次、来回折腾。盘点 1st_strategy.md
+现存的已知 bug 一次修完，严谨一点，再重新跑一遍消融"，不要修一个跑一次、来回折腾。盘点 bots_strategy.md
 "待细化"清单和之前 code review 记录，v1 目前有记录、但还没动手的正确性 bug 只有两个（跟 issue #4/#5/
 #7/#8 那类"设计/校准/新功能"性质的待办不是一回事，那些不算 bug）：
 
@@ -1208,7 +1208,7 @@ Zacian-Crowned、Arceus-Ghost（星晶，前面设计阶段就分析过基本不
 乱用）。跟设计阶段就说好的"不指望这个能大幅提升胜场"一致，分数没有变化，但这是新增了一个
 之前完全没有的决策维度，且验证了它是安全的——下一步走完流程（code review 已经在自查阶段做过
 了，这次不再单独发 review，因为改动逻辑没变，只是修了两个数据源问题）：合并分支、关 issue #5、
-更新 `1st_strategy.md`/`Report_Outline.md` 里对应的"待补充"标记。
+更新 `bots_strategy.md`/`Report_Outline.md` 里对应的"待补充"标记。
 
 ## 2026-07-24 `max_damage-uber` 超时结论修正：`analysis/run_ablation.py` 修复后零超时
 
