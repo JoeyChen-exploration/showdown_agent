@@ -1209,3 +1209,16 @@ Zacian-Crowned、Arceus-Ghost（星晶，前面设计阶段就分析过基本不
 之前完全没有的决策维度，且验证了它是安全的——下一步走完流程（code review 已经在自查阶段做过
 了，这次不再单独发 review，因为改动逻辑没变，只是修了两个数据源问题）：合并分支、关 issue #5、
 更新 `1st_strategy.md`/`Report_Outline.md` 里对应的"待补充"标记。
+
+## 2026-07-24 `max_damage-uber` 超时结论修正：`analysis/run_ablation.py` 修复后零超时
+
+`analysis/run_ablation.py --repeats N`（同一进程里循环 N 次，用递增用户名避免"nametaken"）
+会让残留连接在同一进程生命周期内累积，拖慢本地 Showdown 服务器、虚增超时率——不是决策逻辑或
+对局本身的问题。修成每个 repeat 跑成独立子进程（复现 `expert_main.py` 真实评测"每次全新进程、
+固定用户名"的干净行为，issue #14）后，`baseline` 重新跑 3 次：**15/15，零超时**（此前多轮记录
+的 `max_damage-uber` 1/3 数字不再复现）。
+
+issue #4（"结构性、决策逻辑解决不了"）的结案定论已经不成立，重新打开并改成"已定位为测试工具
+问题，工具修复后确认不存在"。`Ablation_Study.md` 同步更新，历史表格（六处修复轮、v2 最终结果）
+里 `max_damage-uber` 分量的具体数字标注为已知不准确，其余 14 个对手的数据不受影响，配置间的
+相对排序结论大概率仍然成立。

@@ -19,17 +19,28 @@ configs looks sensitive, re-run just those with --repeats 3 (or more) to average
 noise before trusting which value is actually better - a single run is not reliable
 enough on its own (see GitHub issue #2).
 
-NOTE: configs/repeats are run serially within one process, and bot/player account names
-are only deconflicted *within* that one run (see the bot_id_start comment below). Do not
-launch two copies of this script at the same time against the same local Showdown server
-- they would both start numbering from the same ids and collide, reproducing the
-"nametaken" bug this script was written to avoid in the first place.
+Each repeat beyond the first runs as its own isolated subprocess (see run_config()) -
+not just an in-process loop. expert_main.py's own tournament run always logs in with
+*fixed* usernames (the agent's module name; bots as f"{style}-{team}-1..15"), and
+Pokemon Showdown's own protocol evicts a stale session when the same username logs in
+again - so a real fresh process naturally self-cleans. This script used to instead loop
+--repeats N times *in one process*, giving every repeat its own incrementing username
+range purely to dodge "nametaken" crashes - which avoided the crash but meant repeat 1's
+connections were never evicted, just accumulated alongside repeat 2's, repeat 3's, etc.
+within that one process's lifetime. That accumulation measurably degraded the local
+Showdown server partway through a multi-repeat run and inflated timeout-driven losses
+for slow matchups (see GitHub issue #14). Running each repeat as its own process (own
+PID, own clean exit) reproduces the same self-cleaning behavior a real expert_main.py
+invocation gets "for free". A single --repeats 1 invocation is unaffected either way
+(nothing to accumulate within it).
 """
 
 import argparse
 import csv
 import statistics
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -56,17 +67,6 @@ CONFIGS = {
     "switch_defense_weight_90": {"SWITCH_DEFENSE_WEIGHT": 90.0},
     "switch_cost_0": {"SWITCH_COST": 0},
     "switch_cost_50": {"SWITCH_COST": 50},
-    # v2 constants (2026-07-23) - unlike the v1 constants above, these have never been
-    # through an ablation sweep, just set once at write time. Screening round to see if
-    # any of them are sensitive before spending a 3-repeat confirmation pass on them.
-    "counter_threshold_60": {"COUNTER_TABLE_THRESHOLD": 60.0},
-    "counter_threshold_150": {"COUNTER_TABLE_THRESHOLD": 150.0},
-    "counter_bonus_20": {"COUNTER_MATCH_BONUS": 20.0},
-    "counter_bonus_70": {"COUNTER_MATCH_BONUS": 70.0},
-    "taunt_base_30": {"TAUNT_ANTI_STALL_BASE": 30.0},
-    "taunt_perboost_20": {"TAUNT_ANTI_STALL_PER_BOOST": 20.0},
-    "hazard_value_10": {"HAZARD_VALUE_PER_FUTURE_SWITCH_IN": 10.0},
-    "hazard_value_30": {"HAZARD_VALUE_PER_FUTURE_SWITCH_IN": 30.0},
 }
 
 DECISION_LOG_FIELDS = [
@@ -172,15 +172,69 @@ def run_once(name: str, overrides: dict, run_index: int, repeat: int) -> dict:
     }
 
 
+def _run_repeat_via_subprocess(name: str, repeat: int, tmp_root: Path) -> dict:
+    """Runs exactly one repeat of `name` in a fresh, isolated child process - see the
+    module docstring (and GitHub issue #14) for why: a real separate process, with its
+    own fixed account IDs (bot_id_start=1 every time, same as a plain expert_main.py
+    invocation), self-cleans on the local Showdown server the same way expert_main.py
+    does, instead of accumulating connections alongside sibling repeats the way an
+    in-process loop with incrementing usernames used to.
+    """
+    repeat_dir = tmp_root / f"repeat_{repeat}"
+    subprocess.run(
+        [sys.executable, str(Path(__file__).resolve()), "--repeats", "1",
+         "--output-dir", str(repeat_dir), name],
+        check=True,
+        cwd=str(REPO_ROOT),
+    )
+    repeat_config_dir = repeat_dir / name
+    with open(repeat_config_dir / "per_bot.csv", newline="", encoding="utf-8") as f:
+        per_bot_rows = [
+            {
+                "config": name,
+                "repeat": repeat,
+                "opponent": row["opponent"],
+                "winrate": float(row["winrate"]),
+                "beaten": row["beaten"] == "True",
+            }
+            for row in csv.DictReader(f)
+        ]
+    beaten = sum(1 for r in per_bot_rows if r["beaten"])
+    rank = len(per_bot_rows) + 1 - beaten
+    mark = expert_main.assign_marks(rank)
+
+    # Only keep the decision/event trace for the first repeat - see run_once()'s note
+    # on why (same reasoning, just relocating the child process's output instead of
+    # writing it directly).
+    if repeat == 0:
+        config_dir = RESULTS_DIR / name
+        config_dir.mkdir(parents=True, exist_ok=True)
+        for fname in ("decisions.csv", "events.csv"):
+            (repeat_config_dir / fname).replace(config_dir / fname)
+
+    return {
+        "config": name, "repeat": repeat, "rank": rank, "mark": mark,
+        "beaten": beaten, "total": len(per_bot_rows), "per_bot_rows": per_bot_rows,
+    }
+
+
 def run_config(name: str, overrides: dict, run_index_start: int, repeats: int) -> dict:
-    """Runs `repeats` full tournaments for one config and aggregates the results."""
-    repeat_results = []
-    for repeat in range(repeats):
-        if repeats > 1:
-            print(f"  -- repeat {repeat + 1}/{repeats} --")
-        repeat_results.append(run_once(name, overrides, run_index_start + repeat, repeat))
+    """Runs `repeats` full tournaments for one config and aggregates the results.
+    repeats <= 1 runs in-process (nothing to accumulate, no isolation needed).
+    repeats > 1 runs each repeat as its own isolated subprocess (see
+    _run_repeat_via_subprocess and the module docstring, issue #14)."""
+    if repeats <= 1:
+        repeat_results = [run_once(name, overrides, run_index_start, 0)]
+    else:
+        repeat_results = []
+        with tempfile.TemporaryDirectory(prefix="ablation_repeat_") as tmp:
+            tmp_root = Path(tmp)
+            for repeat in range(repeats):
+                print(f"  -- repeat {repeat + 1}/{repeats} (isolated process) --")
+                repeat_results.append(_run_repeat_via_subprocess(name, repeat, tmp_root))
 
     config_dir = RESULTS_DIR / name
+    config_dir.mkdir(parents=True, exist_ok=True)
     all_per_bot_rows = [row for result in repeat_results for row in result["per_bot_rows"]]
     with open(config_dir / "per_bot.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["config", "repeat", "opponent", "winrate", "beaten"])
@@ -227,10 +281,18 @@ def run_config(name: str, overrides: dict, run_index_start: int, repeats: int) -
 
 
 def main():
+    global RESULTS_DIR
     parser = argparse.ArgumentParser()
     parser.add_argument("--repeats", type=int, default=1, help="tournaments per config (default: 1, fast screening)")
+    parser.add_argument(
+        "--output-dir", type=str, default=None,
+        help=argparse.SUPPRESS,  # internal: used by _run_repeat_via_subprocess() to isolate each repeat's output
+    )
     parser.add_argument("configs", nargs="*", help="config names to run (default: all)")
     args = parser.parse_args()
+
+    if args.output_dir:
+        RESULTS_DIR = Path(args.output_dir)
 
     unknown = [name for name in args.configs if name not in CONFIGS]
     if unknown:
