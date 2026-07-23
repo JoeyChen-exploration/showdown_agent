@@ -4,7 +4,8 @@
 > 避免"其实早就有现成信息，绕了远路自己猜"这种情况（比如这次发现 `teampreview_opponent_team`
 > 能在团队预览阶段就知道对面全部 6 只精灵）。只收录跟写战斗决策逻辑相关的公开属性，
 > 不是完整 API 文档——完整文档看 poke_env 源码（本地装在 `pokemon/lib/python3.12/site-packages/poke_env`）。
-> 已经在 `wche652.py` 里用到的标了 ✅，还没用到但可能有用的标了 💡。
+> 已经在 `wche652.py` 里用到的标了 ✅，还没用到但可能有用的标了 💡，名字容易让人以为是一个意思、
+> 实际行为不一样、已经踩过坑的标了 ⚠️。
 
 ## `battle: AbstractBattle`（每次 `_choose_move(battle)` 传进来的对象）
 
@@ -37,11 +38,11 @@
 | 💡 `battle.weather` | 当前天气（`Dict[Weather, int]`，比如下雨/日照，key 是 `Weather` 枚举） |
 | 💡 `battle.fields` | 场地效果（`Dict[Field, int]`，比如电气场地/戏法空间） |
 
-### 太晶化 / 极巨化 / 超级进化状态（v1 目前完全没用到）
+### 太晶化 / 极巨化 / 超级进化状态（太晶化 v3 起已用到，见 `_find_ko_move` 的太晶断死分支）
 | 属性 | 说明 |
 |---|---|
-| 💡 `battle.can_tera` | 这回合我方能不能太晶化 |
-| 💡 `battle.used_tera` | 我方这局用没用过太晶（整局限一次） |
+| ✅ `battle.can_tera` | 这回合我方能不能太晶化 |
+| ✅ `battle.used_tera` | 我方这局用没用过太晶（整局限一次） |
 | 💡 `battle.opponent_used_tera` | 对方用没用过太晶 |
 | `battle.can_dynamax` / `battle.used_dynamax` / `battle.opponent_used_dynamax` | 极巨化相关（Gen9 Ubers 规则下一般不可用，仅供参考） |
 | `battle.can_mega_evolve` / `battle.used_mega_evolve` | 超级进化相关（Gen9 里绝大多数精灵不支持） |
@@ -68,8 +69,14 @@
 | `pokemon.possible_abilities` | 对方精灵可能持有的特性候选列表（还没揭示时用得上） |
 | `pokemon.moves` ✅ | 已知招式（`Dict[str, Move]`，对方精灵只有已经用过的才会出现在这里） |
 | `pokemon.is_terastallized` ✅ | 是否已经太晶化 |
-| `pokemon.tera_type` | 配置的太晶属性（不代表已经太晶化） |
-| `pokemon.stab_multiplier` | 当前 STAB 倍率（已经处理好太晶同属性 2.0 倍的特殊情况） |
+| `pokemon.tera_type` ⚠️ | **不是**"队伍文本里配置的太晶属性"，是"太晶属性目前有没有被战斗协议揭示过"——只有
+  真的太晶化过、或对局开了 Open Team Sheets 才会有值，**我方自己未太晶化的精灵这个字段是 `None`**，
+  这个误解在 v3 实现太晶断死时真的踩过（见 `Experiment_Log.md` 2026-07-24 条目）。要拿"我方队伍
+  文本里写的太晶属性"，`wche652.py` 自己维护了一份 `OUR_TERA_TYPES`（species → `PokemonType`）查表，
+  不依赖这个属性 |
+| `pokemon.stab_multiplier` | 当前 STAB 倍率（已经处理好太晶同属性 2.0 倍的特殊情况）——`wche652.py`
+  没有直接调用它，`_tera_power_score` 自己重新实现了同样的判断逻辑（因为需要算"假设太晶化"的
+  假设性倍率，这个属性只能算"已经/正在太晶化"的实际倍率） |
 | `pokemon.active` | 是否在场上 |
 | `pokemon.must_recharge` | 是否处于"打完招式后必须休整一回合"状态（如喷火驾炮） |
 | `pokemon.preparing` / `pokemon.preparing_move` | 是否处于"蓄力招式的蓄力回合"状态 |
