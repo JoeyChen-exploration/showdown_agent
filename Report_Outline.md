@@ -76,8 +76,10 @@
   规则可解释性 vs 覆盖面之间的权衡
 - 4.5 对下一阶段（v2 太晶逻辑、班级竞赛）的展望
 
-**References**（不计入 6 页页数限制）：课程材料、Smogon 策略资源、`pokeaimmd.com` 工具、
-`poke_env`/Pokemon Showdown 文档等引用来源，写作过程中随手记，避免最后现补。
+**References**（不计入 6 页页数限制，**2026-07-23 已列出 7 条**）：Expert system 定义
+（Wikipedia）、`poke_env`、Pokemon Showdown 模拟器、Teambuilder、Smogon Gen9 Ubers 格式规则、
+`pokeaimmd.com` 队伍随机化工具、课程 `showdown_agent` 起始仓库——全部是实际用到/引用过的来源，
+没有为了凑数加没用过的资源。见 Report_Draft.md 末尾，随写作过程增补。
 
 ---
 
