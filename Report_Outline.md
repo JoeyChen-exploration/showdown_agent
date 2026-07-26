@@ -48,16 +48,26 @@
   A 还要点出局限性），这段已经是 claim+reason+呼应 2.5/2.6 已有证据+隐含局限性（"如果队伍是
   控场队就不适用"）的 B/A 档结构，可以直接作为对照范本
 - 2.3 调研方法：解析 `bots/teams/` 全部 30 只精灵的属性/特性/道具/招式分布（对应 `Opponent_Roster.md`）
+  ——**2026-07-27 补证据**：原来只丢给外部文件，太薄；补了"跨档位重复才纳入通用规则"这条筛选
+  标准 + 两个具体例子（麻痹招式跨 3 档、Choice 锁招跨 3 档），过程在 2.3、汇总表留在 2.4，D/C/B/A
+  审计后从 C 档补到 B/A 档
 - 2.4 调研发现 → 设计决策对照表（麻痹类招式/Choice 锁招/撒钉子/拍落频率 →
   分别怎么反映在设计里，撒钉子这条明确是没解决的短板）
 - 2.5 决策架构：为什么是"硬短路 + 单回合打分"（体现理解如何演变，对应 `bots_strategy.md` 的
-  讨论过程），呼应图 2.1 四层级联的来历
+  讨论过程），呼应图 2.1 四层级联的来历——**2026-07-27 补证据**：if-elif 段落补了换人打分"连续
+  数值权衡、离散分支表达不了"的具体例子；minimax 段落接了 Russell & Norvig AIMA 的 task
+  environment properties 分类引用 [9]，并明说"对手不博弈"这个前提在班级竞赛场景下可能不成立
+  的边界，D/C/B/A 审计后从 C 档补到 A 档
 - 2.6 具体机制设计（每个小节：设计动机 + 实现方式，不含跑分数字）
   - 2.6.1 硬短路 KO 规则
   - 2.6.2 换人评分（进攻端/防御端双向打分）
   - 2.6.3 铺垫招式打分（速度优先判断"扛不扛得住"）
   - 2.6.4 Ribombee 固定开局脚本（Sticky Web → Stun Spore/U-turn 分支）
-- 2.7 明确不做的决策与理由：不做多回合搜索/minimax（对面非博弈 bot）、v1 不实现太晶化
+- 2.7 明确不做的决策与理由：不做多回合搜索/minimax（对面非博弈 bot）、v1 不实现太晶化——
+  **2026-07-27 补证据**：v1 不实现太晶化这条原来是纯 claim（"变量太多"），补了 v3 实际踩的
+  两个太晶化 bug（`tera_type` 语义理解错误、Judgment 类型没跟着太晶属性动态解析）作为事后验证
+  证据，并接 AIMA 引用 [9] 把这条判断跟 2.6.4 开局脚本"低随机性阶段适合写死"并列成同一套理论
+  框架的正反对照，D/C/B/A 审计后从 C 档补到 A 档
 - 2.8 局限性讨论：打分权重是启发式初始值、伤害/招式威力估算是有限信息近似（自然过渡到
   Evaluation/Reflections 里那个具体案例）、队伍没有清钉手段
 
@@ -148,10 +158,15 @@
 - 4.7 对下一阶段（班级竞赛等）的展望（**待写**；太晶逻辑已在 v3 完成，见
   `Experiment_Log.md`，这里改成回顾而非展望）
 
-**References**（不计入 6 页页数限制，**2026-07-23 已列出 7 条**）：Expert system 定义
+**References**（不计入 6 页页数限制，**2026-07-27 已扩到 10 条**）：Expert system 定义
 （Wikipedia）、`poke_env`、Pokemon Showdown 模拟器、Teambuilder、Smogon Gen9 Ubers 格式规则、
-`pokeaimmd.com` 队伍随机化工具、课程 `showdown_agent` 起始仓库——全部是实际用到/引用过的来源，
-没有为了凑数加没用过的资源。见 Report_Draft.md 末尾，随写作过程增补。
+`pokeaimmd.com` 队伍随机化工具、课程 `showdown_agent` 起始仓库、**新增 3 条真实 peer-reviewed/
+教材级文献**——Buchanan & Shortliffe (1984) MYCIN 专家系统原始文献 [8]、Russell & Norvig AIMA
+task environment properties 分类 [9]、Mytkowicz et al. (2009) ASPLOS 系统评测方法论论文 [10]。
+三篇都用 WebSearch 核实过真实存在，且都跟 Assignment 1 的专家系统/规则系统定位一致——**明确
+排除了 ML/RL 相关文献**（用户提醒过 Assignment 2 才是 RL，原计划里的 Henderson et al. 2018 RL
+论文已替换成 Mytkowicz et al.），每篇都在正文对应论证句子旁插了引用标记，不是只堆在列表里。
+见 Report_Draft.md 末尾，随写作过程增补。
 
 ---
 
