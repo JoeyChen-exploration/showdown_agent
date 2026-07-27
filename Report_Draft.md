@@ -86,11 +86,11 @@ Frankly,我在开始这个项目之前，没有实际玩过或看过 Pokémon �
 
 | 威胁类型 | 具体表现 | 我们的应对 |
 |---|---|---|
-| 麻痹类招式（Cobalion/Rotom-Wash/Slowbro 等跨 3 档） | 速度直接减半，25% 概率无法行动 | `_effective_speed` 把麻痹计入速度减半，直接影响"谁先手"判断 |
-| 先制招式（Sucker Punch/Extreme Speed/Bullet Punch，跨多档） | 招式优先度压过速度 | `_we_move_first` 检查对面本局已亮出的先制招式，压过速度比较（2.4） |
-| Choice 系列锁招道具（Darkrai/Metagross/Zapdos-Galar 等跨 3 档） | 第一次出招后基本锁定招式类型 | 我方 Kyogre 自己也是 Choice Band，可反向利用"对方也被锁死"这一点 |
-| 撒钉子（Stealth Rock/Spikes，几乎每档都有） | 每次换人扣血 | 队伍没有专门应对手段（没人带 Heavy-Duty Boots） |
-| 拍落 Knock Off（几乎每档都有） | 命中后永久移除目标持有物 | 队伍里三只（Zacian-Crowned/Arceus-Ghost/Eternatus）拿的是不可被拍落的专属道具，天然规避一部分风险 |
+| 麻痹类招式（Cobalion/Rotom-Wash/Slowbro 等跨 3 档） | 速度直接减半，25% 概率无法行动 | `_effective_speed` 让麻痹目标速度 ×0.5，重新计算"谁先手"，避免铺垫招式在麻痹后被误判为安全 |
+| 先制招式（Sucker Punch/Extreme Speed/Bullet Punch，跨多档） | 招式优先度压过速度 | `_we_move_first` 只要对面本局亮过先制招式就直接判定对面先手，无视双方数值速度，避免"我方更快、可以安全铺垫"的误判 |
+| Choice 系列锁招道具（Darkrai/Metagross/Zapdos-Galar 等跨 3 档） | 第一次出招后基本锁定招式类型 | **无运行时应对**——代码不读对手持有道具，也没有"预测对面被锁定招式"的逻辑；我方 Kyogre 同样是 Choice Band 纯属队伍构筑巧合，不是利用这条信息的机制，是一个能做但没做的方向 |
+| 撒钉子（Stealth Rock/Spikes，几乎每档都有） | 每次换人扣血 | **无应对**——队伍没有携带 Heavy-Duty Boots 或任何清钉招式，是队伍构成上没有解决的短板 |
+| 拍落 Knock Off（几乎每档都有） | 命中后永久移除目标持有物 | Zacian-Crowned/Arceus-Ghost 的专属道具（Rusted Sword/Spooky Plate）在规则上本就不可被拍落；Eternatus 的 Power Herb 是一次性消耗道具，效果在能被拍掉之前就已经触发生效——三只合计让 Knock Off 打不到实际杀伤力 |
 
 ### 2.3 队伍构成：Hyper Offense 打法定位
 
