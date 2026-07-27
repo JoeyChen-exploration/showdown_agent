@@ -17,6 +17,10 @@ dist/
 rl_logs/
 .vscode/
 
+# personal/local Claude Code overrides - .claude/settings.json (shared) and the
+# hooks/agents/memory under .claude/ stay tracked, this is the personal layer only
+.claude/settings.local.json
+
 showdown_agent/scripts/client_secrets.json
 
 # ignore these whole directories (their contents)
