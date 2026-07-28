@@ -62,16 +62,16 @@ Ribombee is the only Pokémon carrying opponent-speed-control (Sticky Web), temp
 
 *The four-layer decision cascade inside `_choose_move`: forced switch → fixed Ribombee opening (turns ≤2) → hard-KO short-circuit → general single-turn scoring fallback. Any layer that fires short-circuits the rest.*
 
-The system is built from two distinct styles of logic: **turns 1–2 use a fixed if-else script**, everything else uses **greedy scoring** — evaluate every legal action this turn and take the highest-scoring one, with no multi-turn lookahead. The final, ablation-confirmed parameters:
+The system is built from two distinct styles of logic: **turns 1–2 use a fixed if-else script**, everything else uses **greedy scoring** — evaluate every legal action this turn and take the highest-scoring one, with no multi-turn lookahead. The final parameters, each confirmed by ablation (§3.3):
 
-| Parameter | Value | Meaning | Ablation result (§3.3) |
-|---|---|---|---|
-| Hard-KO short-circuit | on | Take a guaranteed KO immediately, bypassing scoring; also previews a Tera-assisted KO (factor 4 — used only for this one narrow purpose, not general Tera timing) | 15.00→14.67 when disabled — one of only two modules with a measurable effect |
-| Ribombee opening script | on | Fixed if-else for turns ≤2 | 15.00→14.33 when disabled — the other module with a measurable effect |
-| `SETUP_BOOST_WEIGHT` | 55.0 | Score per stat-stage from a setup move | Calibrated up from 30; largely insensitive across the tested range |
-| `SWITCH_DEFENSE_WEIGHT` | 60.0 | Defensive-risk weight in switch scoring | Tested at 30/90 — both still perfect scores |
-| `SWITCH_COST` | 25 | Flat cost applied to any switch | Tested at 0/50 — both still perfect scores |
-| `FASTER_/SLOWER_SURVIVAL_THRESHOLD` | 0.9 / 0.6 | Tolerance for a setup move when we move first / when the opponent does | Raised from 0.5/0.35 — the setup-safety check didn't actually fire below this (issue #7) |
+| Parameter | Value | Meaning |
+|---|---|---|
+| Hard-KO short-circuit | on | Take a guaranteed KO immediately, bypassing scoring; also previews a Tera-assisted KO (factor 4 — used only for this one narrow purpose, not general Tera timing) |
+| Ribombee opening script | on | Fixed if-else for turns ≤2 |
+| `SETUP_BOOST_WEIGHT` | 55.0 | Score per stat-stage from a setup move |
+| `SWITCH_DEFENSE_WEIGHT` | 60.0 | Defensive-risk weight in switch scoring |
+| `SWITCH_COST` | 25 | Flat cost applied to any switch |
+| `FASTER_/SLOWER_SURVIVAL_THRESHOLD` | 0.9 / 0.6 | Tolerance for a setup move when we move first / when the opponent does (raised from 0.5/0.35 — the check didn't actually fire below this, issue #7) |
 
 **Why if-else for the opening.** Turns 1–2 have no revealed information yet (items, EVs, Tera type are all unknown), which is exactly where a general scoring framework is most likely to misjudge from insufficient data. Sticky Web on turn 1 (slowing the opponent's future switch-ins), branching into Stun Spore or U-turn on turn 2, is a fixed combination already confirmed to hold up under uncertainty — the ablation cost of disabling it (15.00→14.33) is the direct evidence that this specific combo earns its place as a script rather than being recomputed from scratch every game. The U-turn branch specifically checks whether Kyogre is still alive and pivots into it rather than switching arbitrarily: U-turn deals chip damage and swaps out in the same action, and Kyogre's Drizzle sets rain the instant it's sent in — so the pivot both retreats Ribombee and brings the rain-boosted wallbreaker online for free, a scripted synergy that a per-turn scoring pass over "what's the best move right now" would have no way to plan for in advance.
 
@@ -108,8 +108,6 @@ With the roster held fixed, random move selection is close to a guaranteed loss;
 
 **Only two modules produce a reproducible, real score difference when removed.** Disabling the hard-KO rule costs 0.33 bots beaten, disabling the opening script costs 0.67 — both several times the 0.29 noise floor. Per-bot detail confirms these are genuine in-battle losses, not timeouts, concentrated against `simple-uber` (`poke_env`'s built-in `SimpleHeuristicsPlayer`, which genuinely sets hazards/boosts/switches, unlike the purely greedy `max_damage` bot).
 
-![Ablation: mean bots beaten per config, 3 repeats each](analysis/figures/ablation_mean_beaten.png)
-
 Every weight parameter, by contrast, is tied or nearly tied across everything tested — but "tied" turns out to mean different things for each, and the three weights don't share one story.
 
 **How `SETUP_BOOST_WEIGHT` was actually found.** Setup-move scoring is `stat-stages boosted × SETUP_BOOST_WEIGHT`; a 2-stage move like Swords Dance scores `2 × SETUP_BOOST_WEIGHT`. At the old default of 30, that's a flat 60 — but across 268 real candidacy cases, the score needed to actually win that turn's comparison ranged from 95 to 570 (mean 237), so 60 never won. Win rate alone can't see this: it takes counting how often the setup move was actually *chosen* in a run, alongside the usual mean-beaten/stdev, to tell "the mechanism is silently dead" apart from "the mechanism works and just doesn't matter here":
@@ -143,6 +141,16 @@ The same conclusion surviving two independent formula rewrites and a measurement
 | 50 | 15.00 | 0.00 |
 
 As with `SWITCH_DEFENSE_WEIGHT`, the value is a design choice rather than an empirical one: `SWITCH_COST=25` keeps the framework biased toward staying in and attacking rather than pivoting at the first sign of risk, which a stall team could afford but a speed-sweep team, whose plan is to keep applying tempo, cannot (§2.3). This reasoning for both switch weights matters more, not less, once the opponent isn't the fixed bot ladder: an unknown class-competition opponent may punish over-cautious switching in a way this bot ladder never tests, so bot-ladder data alone was never going to be able to make this choice.
+
+**`FASTER_/SLOWER_SURVIVAL_THRESHOLD`: the one pair that isn't just tied.** Issue #7 raised these from 0.5/0.35 to 0.9/0.6 by direct calculation — a plain 90–120 BP STAB neutral hit already scores 0.34–0.45, so the old thresholds blocked setup moves against almost any real attacker — rather than a broad screening sweep, and the pair had never been re-tested against nearby alternatives until now:
+
+| Configuration | FASTER / SLOWER | Mean beaten / 15 | Stdev |
+|---|---|---|---|
+| Lower | 0.7 / 0.4 | 14.67 | 0.29 |
+| **Final** | **0.9 / 0.6** | **15.00** | **0.00** |
+| Higher | 1.1 / 0.8 | 15.00 | 0.00 |
+
+Unlike the three weights above, this one isn't fully insensitive: moving toward the old, stricter direction costs a real 0.33 bots beaten, consistent with the original diagnosis that stricter thresholds block legitimate setup turns. Moving further in the permissive direction costs nothing measured here — though that's more likely a property of this specific bot ladder than proof that even-more-permissive thresholds carry no risk in general, since a genuinely more aggressive opponent could plausibly punish an over-permissive setup call in a way none of these 15 bots do.
 
 ## 4. Reflections
 

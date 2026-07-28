@@ -447,3 +447,28 @@ v1 阶段性收尾之后正式进入 v2：加了 Taunt 反叠盾评分、团队�
 3. `simple-uber`（真正有策略的对手）现在是数据上唯一还有真实损失的对手，值得列为下一个
    排查方向。
 4. 有需要时可以用当前代码重新跑一遍完整 9 配置横向对比，替换上表里已知过时的 8 行数字。
+
+## 2026-07-29 补测 `FASTER_/SLOWER_SURVIVAL_THRESHOLD`（写英文最终报告时发现的空白）
+
+issue #7 把这两个阈值从 0.5/0.35 提到 0.9/0.6 时，是直接算出来的（普通攻击招式打分在 0.34-0.45
+区间，门槛必须高于这个才有意义），不是像 `SETUP_BOOST_WEIGHT` 那样做过一轮筛选，所以这两个阈值
+从来没有测过"附近的值会不会更好"。写 `Report_Final.md` §3.3 时被问到"为什么当时没跑"，确认
+是真的没跑过，现在补上：`run_ablation.py` 的 `CONFIGS` 里加了 `survival_threshold_low`
+（0.7/0.4）和 `survival_threshold_high`（1.1/0.8），跑了 3 次重跑：
+
+| 配置 | FASTER / SLOWER | mean_beaten/15 | stdev |
+|---|---|---|---|
+| survival_threshold_low | 0.7 / 0.4 | 14.67 | 0.29 |
+| **baseline（当前值）** | **0.9 / 0.6** | **15.00** | **0.00** |
+| survival_threshold_high | 1.1 / 0.8 | 15.00 | 0.00 |
+
+**跟其余三个权重（`SETUP_BOOST_WEIGHT`/`SWITCH_DEFENSE_WEIGHT`/`SWITCH_COST`）不一样，这个
+不是完全打平的**：往旧的、更严格的方向（0.7/0.4，还没旧到原始的 0.5/0.35）挪，真的掉了 0.33
+（跟当初"旧阈值太严格挡住合法铺垫"这个诊断方向一致）；往更宽松的方向（1.1/0.8）挪，这批 15 个
+bot 测不出代价。后者更可能是"这批对手不会惩罚过于激进的铺垫时机"这个梯队本身的性质，不是"再宽松
+也没有风险"的证明——报告里也是这么写的，不夸大结论。
+
+原始数据在 `analysis/results/survival_threshold_low/`、`analysis/results/survival_threshold_high/`，
+`summary.csv` 已合并进去（注意：`run_ablation.py` 只传部分 config 名字跑的时候会**整个覆盖**
+`summary.csv`，不是追加——这次跑完手动从 git 历史恢复了原来 9 行、把新 2 行接在后面，以后同样
+只传子集跑的时候要记得这一点，不要直接信当前文件、先跟 git diff 对一下）。
