@@ -28,7 +28,7 @@ ACCENT_EDGE = "#b8721f"
 BRANCHES = [
     ("Forced switch", "battle.force_switch\n(fainted / pivoted out)", "best_switch()\nhighest-scoring switch"),
     ("Ribombee opening", "active = Ribombee\nturn ≤ 2", "Fixed script:\nSticky Web → retreat / Stun Spore"),
-    ("Guaranteed KO", "a move's estimated\ndamage ≥ opponent HP%", "Execute that\nKO move"),
+    ("Guaranteed KO", "a move's estimated damage\n(incl. Tera-assisted) ≥ opp. HP%", "Execute that\nKO move"),
     ("General scoring", "(fallback —\nalways reached)", "Score every legal move\n& switch, pick the max"),
 ]
 
@@ -97,7 +97,7 @@ def main():
     ax.text(cx, action_y, BRANCHES[3][2], ha="center", va="center", fontsize=7.4,
             color=INK, linespacing=1.4)
 
-    fig.suptitle("wche652 · _choose_move decision cascade (v1)", fontsize=10.5, fontweight="bold",
+    fig.suptitle("wche652 · _choose_move decision cascade", fontsize=10.5, fontweight="bold",
                  color=INK, x=0.02, ha="left", y=0.995)
 
     fig.tight_layout(rect=(0, 0, 1, 0.94))
