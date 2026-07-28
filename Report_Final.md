@@ -4,18 +4,18 @@
 
 Frankly, before starting this project I had never played or watched competitive Pokémon, so my domain knowledge was close to zero. I have played strategy card games like Hearthstone before, though, and the question of "how much do I know about my opponent's options, and how should I allocate resources under that uncertainty" felt structurally similar to what a Pokémon battle asks every turn. I open with this not as a disclaimer, but because it directly shaped the methodology: with no domain intuition to fall back on, the whole design had to start from systematic, verifiable research rather than guessing from experience. This also motivates adopting an expert-system architecture [1][8] — an inference engine applying heuristic rules from a knowledge base, with a clear explanation facility — which keeps every turn's decision path traceable and auditable.
 
-That research identified eight core factors a battle decision system has to handle:
+That research identified eight core factors a battle decision system has to handle, which are the foundation the rest of the design is argued from:
 
-1. **Type effectiveness** — the damage-multiplier relationships between types; the baseline for nearly every move-choice and switch-safety decision.
-2. **Move secondary effects** — a move is more than its power number: status-infliction chance, stat changes, field effects, recoil, and accuracy together decide what it's actually for.
-3. **Held items** — Choice items (flexibility traded for power), permanent transformation items, and one-time defensive items each add a distinct rule the decision logic must account for.
-4. **Terastallization** — Gen9's one-time, irreversible type-switch mechanic, the single largest source of mid-battle complexity this generation.
-5. **Tier system (Ubers/OU/UU/RU/NU)** — caps how strong the opponent's Pokémon can be per tier, and is the source of this task's five-tier opponent ladder.
-6. **Random teampreview lead order** — verified via `poke_env`'s source that all three opponent AI styles pick their lead uniformly at random, ruling out any "predict their fixed opener" strategy in favor of general runtime rules.
-7. **Speed/turn order** — who moves first decides whose move resolves first, directly affecting whether a setup move gets to matter or retreating is safer; with the opponent's real stats unknown, we conservatively assume their maximum possible speed.
-8. **Simultaneous move selection** — both sides pick a move without seeing the other's choice; only speed/priority decide who actually goes first once both are submitted. Unlike Hearthstone's strictly sequential turns, we never get to react to what the opponent just did — every decision has to hedge against what they *might* do, not respond to what they *did*.
-
-These eight factors are the foundation the rest of the design is argued from.
+| # | Factor | Design implication |
+|---|---|---|
+| 1 | Type effectiveness | Baseline for nearly every move-choice and switch-safety decision |
+| 2 | Move secondary effects | Status chance, stat changes, field effects, recoil, and accuracy define what a move is *for*, not just its power number |
+| 3 | Held items | Choice items, permanent transformation items, and one-time defensive items each add a distinct rule |
+| 4 | Terastallization | One-time, irreversible — the single largest source of mid-battle complexity this generation |
+| 5 | Tier system (Ubers/OU/UU/RU/NU) | Caps opponent strength per tier; source of this task's five-tier opponent ladder |
+| 6 | Random teampreview lead order | Verified via `poke_env`'s source — rules out predicting a fixed opener, forcing general runtime rules instead |
+| 7 | Speed/turn order | Decides whose move resolves first; opponent's real stats are unknown, so we conservatively assume their maximum possible speed |
+| 8 | Simultaneous move selection | Neither side sees the other's choice before submitting — unlike Hearthstone's sequential turns, every decision must hedge against a threat, not react to one |
 
 ## 2. Design
 
