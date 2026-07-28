@@ -173,10 +173,14 @@ move` 就是推理机；"知识库"虽在 Reflections 被讨论多次，但没�
   概念的新理解"最好的素材，也是 `COMPSYS726_Assignments.pdf` 明确要求的"reflect on how your
   method and understanding...have changed over the course"最直接的回应。
 
-- **待办（2026-07-27 新增）**：原 Design 2.8 局限性讨论整段移出后，有两条内容目前在全文没有
-  任何位置提起，还没找到新家——①打分公式里的权重是启发式给的初始值、不是理论推导出来的；
-  ②队伍没有任何清钉/免疫钉子手段（没人带 Heavy-Duty Boots）。这两条不属于"没写"，是"从 Design
-  搬走了但还没正式搬进 Reflections 哪一节"，下次写 Reflections 时要记得处理，不要漏掉
+- **待办（2026-07-27 新增，2026-07-28 追加两条）**：原 Design 2.8 局限性讨论整段移出后，有几条
+  内容目前在全文没有任何位置提起，还没找到新家——①打分公式里的权重是启发式给的初始值、不是
+  理论推导出来的；②队伍没有任何清钉/免疫钉子手段（没人带 Heavy-Duty Boots）；③（2026-07-28
+  从 `Report_Final.md` 2.3 删掉的一段）Choice 锁招无运行时应对（我方 Kyogre 也用 Choice Band
+  纯属巧合，代码不读对手道具）；④（同上）Knock Off 靠三只专属/消耗道具规避（Rusted Sword/
+  Spooky Plate 规则上不可拍落，Power Herb 效果已生效再被拍掉也不影响）。这几条不属于"没写"，
+  是"从 Design 搬走了但还没正式搬进 Reflections 哪一节"，下次写 Reflections 时要记得处理，
+  不要漏掉
 - 4.2 预期 vs 实际：队伍强度实验揭示的"纯规则系统面对会博弈的 `simple` AI 明显更吃力"现象
 - 4.3 具体案例复盘：对手速度估算 bug，讨论"用有限信息（种族值）近似未知量（对手真实努力值）"
   这个专家系统里常见的权衡
