@@ -1,0 +1,16 @@
+config,opponent,repeats,mean_winrate,stdev_winrate,beaten_count
+survival_threshold_low,max_damage-nu,3,1.0,0.0,3
+survival_threshold_low,max_damage-ou,3,1.0,0.0,3
+survival_threshold_low,max_damage-ru,3,1.0,0.0,3
+survival_threshold_low,max_damage-uber,3,1.0,0.0,3
+survival_threshold_low,max_damage-uu,3,1.0,0.0,3
+survival_threshold_low,random-nu,3,1.0,0.0,3
+survival_threshold_low,random-ou,3,1.0,0.0,3
+survival_threshold_low,random-ru,3,1.0,0.0,3
+survival_threshold_low,random-uber,3,1.0,0.0,3
+survival_threshold_low,random-uu,3,1.0,0.0,3
+survival_threshold_low,simple-nu,3,1.0,0.0,3
+survival_threshold_low,simple-ou,3,1.0,0.0,3
+survival_threshold_low,simple-ru,3,1.0,0.0,3
+survival_threshold_low,simple-uber,3,0.5555555555555556,0.19245008972987523,2
+survival_threshold_low,simple-uu,3,1.0,0.0,3

@@ -67,6 +67,8 @@ CONFIGS = {
     "switch_defense_weight_90": {"SWITCH_DEFENSE_WEIGHT": 90.0},
     "switch_cost_0": {"SWITCH_COST": 0},
     "switch_cost_50": {"SWITCH_COST": 50},
+    "survival_threshold_low": {"FASTER_SURVIVAL_THRESHOLD": 0.7, "SLOWER_SURVIVAL_THRESHOLD": 0.4},
+    "survival_threshold_high": {"FASTER_SURVIVAL_THRESHOLD": 1.1, "SLOWER_SURVIVAL_THRESHOLD": 0.8},
 }
 
 DECISION_LOG_FIELDS = [
