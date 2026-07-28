@@ -58,7 +58,7 @@ Ribombee is the only Pokémon carrying opponent-speed-control (Sticky Web), temp
 
 ### 2.4 Core Algorithm: if-else for the Opening, Greedy Scoring Everywhere Else
 
-![wche652 decision cascade](analysis/figures/decision_flow.png)
+![Decision cascade](analysis/figures/decision_flow.png)
 
 *The four-layer decision cascade inside `_choose_move`: forced switch → fixed Ribombee opening (turns ≤2) → hard-KO short-circuit → general single-turn scoring fallback. Any layer that fires short-circuits the rest.*
 

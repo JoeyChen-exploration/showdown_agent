@@ -151,7 +151,7 @@ Zacian-Crowned 的 Rusted Sword、Arceus-Ghost 的 Spooky Plate 在 Showdown 规
 
 ### 2.4 核心算法：if-else（开局）+ greedy（通用打分）
 
-![wche652 decision cascade](analysis/figures/decision_flow.png)
+![Decision cascade](analysis/figures/decision_flow.png)
 
 *（图：`_choose_move` 的四层决策级联——强制换人 → Ribombee 固定开局脚本（回合 ≤ 2）→ 硬短路
 斩杀检测 → 通用单回合打分兜底，前三层任意一层条件满足就直接执行、不再往下走。生成脚本：
