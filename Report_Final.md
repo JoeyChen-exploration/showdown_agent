@@ -96,9 +96,9 @@ To satisfy the requirement that a good ranking has to be shown to come from the 
 | Team | Decision logic | Bots beaten / 15 | Rank / mark |
 |---|---|---|---|
 | Current roster (unchanged) | Random move selection | 1/15 (only `random-ru`, 0.67 win rate; all others <0.5) | #15 / 1.0 |
-| Current roster (unchanged) | Rule-based system | 14–15/15 (§3.3's `baseline`) | — |
+| Current roster (unchanged) | Rule-based system | 15/15 (§3.3's `baseline`) | — |
 
-With the roster held fixed, random move selection is close to a guaranteed loss; switching to the rule system alone raises bots beaten from 1 to 14–15. That jump is the quantitative evidence that the win-rate improvement comes from the decision logic, not simply "the roster was already strong."
+With the roster held fixed, random move selection is close to a guaranteed loss; switching to the rule system alone raises bots beaten from 1 to 15. That jump is the quantitative evidence that the win-rate improvement comes from the decision logic, not simply "the roster was already strong."
 
 ### 3.3 Ablation: Which Rules and Weights Actually Matter
 
