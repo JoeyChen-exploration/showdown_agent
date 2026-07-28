@@ -1474,3 +1474,34 @@ Blade，0 优先度普通招式），不是先制招式；这局里对面唯一�
 **决定**：issue #16 保持开放，标注成"已调查、结论是当前证据下无法在合理成本内确定根因"，不是
 "放弃调查"，如果以后有更好的调查手段（比如真的需要往这个方向投入建设一套跨语言存档回放工具）
 再回来看。这次调查全程没有改动 `wche652.py` 或任何影响提交/跑分的文件。
+
+## 2026-07-29 补测 `FASTER_/SLOWER_SURVIVAL_THRESHOLD`：三个权重打平，这一个不打平
+
+**背景**：写英文最终报告（`Report_Final.md`）§3.3 时，给 `SETUP_BOOST_WEIGHT`/`SWITCH_DEFENSE_WEIGHT`/
+`SWITCH_COST` 三个权重各自补了真实历史消融故事，结果发现 `FASTER_SURVIVAL_THRESHOLD`/
+`SLOWER_SURVIVAL_THRESHOLD`（issue #7 从 0.5/0.35 校准到 0.9/0.6 的那一对）从来没有被拿去测过
+"附近的值会不会更好"——当时是直接算出来的（普通攻击招式打分在 0.34-0.45，门槛得高于这个），
+不是像 `SETUP_BOOST_WEIGHT` 那样做过筛选。查了 `analysis/run_ablation.py` 的 `CONFIGS` 确认
+真的没有这两个参数的条目，不是漏看了旧数据。
+
+**改动**：`CONFIGS` 里加了 `survival_threshold_low`（0.7/0.4）、`survival_threshold_high`
+（1.1/0.8），起本地 Showdown 服务器，`--repeats 3` 跑了这两组。
+
+**结果**：
+
+| 配置 | FASTER / SLOWER | mean_beaten/15 | stdev |
+|---|---|---|---|
+| survival_threshold_low | 0.7 / 0.4 | 14.67 | 0.29 |
+| **baseline（当前值）** | **0.9 / 0.6** | **15.00** | **0.00** |
+| survival_threshold_high | 1.1 / 0.8 | 15.00 | 0.00 |
+
+跟另外三个权重全部打平不一样，这一对**往严格方向挪是真的会掉分的**（0.33，跟"旧阈值太严格挡住
+合法铺垫"这条诊断方向一致），往宽松方向挪在这批 15 个 bot 上测不出代价——但这更可能是这批对手
+本身不惩罚过度激进的铺垫时机，不能倒推成"再宽松也没有风险"，报告里也是这么写的，没有夸大。
+
+**踩了一个坑，记一下**：`run_ablation.py` 只传这两个 config 名字跑的时候，把 `analysis/results/
+summary.csv` 整个覆盖成只有这两行，之前 9 行数据丢了（不是真的丢——git 历史里还在，手动
+`git show HEAD:...` 恢复 + 把新两行接在后面合并回去了）。以后只传子集跑消融，跑完先 `git diff`
+看一眼 `summary.csv`，不要想当然。完整记录见 `Ablation_Study.md` 2026-07-29 那条。
+
+**下一步**：走完流程——合并分支、`Report_Final.md`/`Ablation_Study.md` 已经同步更新过了。
