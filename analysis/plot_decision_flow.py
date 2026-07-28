@@ -97,7 +97,7 @@ def main():
     ax.text(cx, action_y, BRANCHES[3][2], ha="center", va="center", fontsize=7.4,
             color=INK, linespacing=1.4)
 
-    fig.suptitle("wche652 · _choose_move decision cascade", fontsize=10.5, fontweight="bold",
+    fig.suptitle("_choose_move decision cascade", fontsize=10.5, fontweight="bold",
                  color=INK, x=0.02, ha="left", y=0.995)
 
     fig.tight_layout(rect=(0, 0, 1, 0.94))
