@@ -56,8 +56,6 @@ The team was built with the [pokeaimmd.com Ubers team builder](https://www.pokea
 
 Ribombee is the only Pokémon carrying opponent-speed-control (Sticky Web), tempo disruption (Stun Spore), and a risk-free opening turn (Focus Sash) together, which is why it leads and anchors the fixed opening script (§2.4).
 
-Team construction also had to make a call on the three cumulative threats from §2.2. Choice-locking gets **no runtime response** — Kyogre also carrying Choice Band is coincidental, not a mechanism (the code never reads the opponent's held item). Hazards likewise get no response — no Heavy-Duty Boots, no hazard removal — an acknowledged gap. Knock Off is the one threat actually neutralised at the roster level: Zacian-Crowned's Rusted Sword and Arceus-Ghost's Spooky Plate cannot legally be knocked off under Showdown's rules, and Eternatus's Power Herb is a one-time consumable that has already done its job before it could be stripped — three of six Pokémon are immune to Knock Off's real damage by construction, not by any in-battle judgement.
-
 ### 2.4 Core Algorithm: if-else for the Opening, Greedy Scoring Everywhere Else
 
 ![wche652 decision cascade](analysis/figures/decision_flow.png)
