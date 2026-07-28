@@ -93,7 +93,12 @@ To be explicit about what this buys us: **this multi-run discipline only applies
 
 To satisfy the requirement that a good ranking has to be shown to come from the *method*, not just a strong roster, we ran a controlled comparison early on: keep the current team fixed, but replace `_choose_move` with the framework's built-in random move selection. This isolates team strength from decision logic.
 
-Result: **rank #15, mark 1.0, 1/15 bots beaten** — only `random-ru` (0.67 win rate; every other matchup below 0.5). A strong roster with random move selection is close to a guaranteed loss; switching to our rule system with the same, unchanged team raised that to 14–15/15 (§3.3's `baseline`). That jump is the quantitative evidence that the win-rate improvement comes from the decision logic, not simply "the roster was already strong."
+| Team | Decision logic | Bots beaten / 15 | Rank / mark |
+|---|---|---|---|
+| Current roster (unchanged) | Random move selection | 1/15 (only `random-ru`, 0.67 win rate; all others <0.5) | #15 / 1.0 |
+| Current roster (unchanged) | Rule-based system | 14–15/15 (§3.3's `baseline`) | — |
+
+With the roster held fixed, random move selection is close to a guaranteed loss; switching to the rule system alone raises bots beaten from 1 to 14–15. That jump is the quantitative evidence that the win-rate improvement comes from the decision logic, not simply "the roster was already strong."
 
 ### 3.3 Ablation: Which Rules and Weights Actually Matter
 
