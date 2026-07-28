@@ -104,7 +104,13 @@ With the roster held fixed, random move selection is close to a guaranteed loss;
 
 ### 3.3 Ablation: Which Rules and Weights Actually Matter
 
-§3.2 only shows *that* the decision logic matters; this section isolates *which* rules and weights inside it do.
+§3.2 only shows *that* the decision logic matters; this section isolates *which* rules and weights inside it do. Every number below reruns the final configuration (§2.4) with exactly one change, 3 times, reported as mean ± stdev, with a difference only counting as real once it clearly clears the noise floor observed across repeats (0.29 in this data). Full data is in `analysis/results/`, per-config detail in `Ablation_Study.md`.
+
+**Only two modules produce a reproducible, real score difference when removed.** Disabling the hard-KO rule costs 0.33 bots beaten, disabling the opening script costs 0.67 — both several times the 0.29 noise floor. Per-bot detail confirms these are genuine in-battle losses, not timeouts, concentrated against `simple-uber` (`poke_env`'s built-in `SimpleHeuristicsPlayer`, which genuinely sets hazards/boosts/switches, unlike the purely greedy `max_damage` bot).
+
+![Ablation: mean bots beaten per config, 3 repeats each](analysis/figures/ablation_mean_beaten.png)
+
+Every weight parameter, by contrast, is tied or nearly tied across everything tested — but "tied" turns out to mean different things for each, and the three weights don't share one story.
 
 **How `SETUP_BOOST_WEIGHT` was actually found.** Setup-move scoring is `stat-stages boosted × SETUP_BOOST_WEIGHT`; a 2-stage move like Swords Dance scores `2 × SETUP_BOOST_WEIGHT`. At the old default of 30, that's a flat 60 — but across 268 real candidacy cases, the score needed to actually win that turn's comparison ranged from 95 to 570 (mean 237), so 60 never won. Win rate alone can't see this: it takes counting how often the setup move was actually *chosen* in a run, alongside the usual mean-beaten/stdev, to tell "the mechanism is silently dead" apart from "the mechanism works and just doesn't matter here":
 
@@ -112,31 +118,31 @@ With the roster held fixed, random move selection is close to a guaranteed loss;
 |---|---|---|
 | 30 (old default) | 0 | 15.00 (0.00) — never fires; the mechanism doesn't exist in practice |
 | 50 | 0 | 15.00 (0.00) — right at the threshold, still essentially inert |
-| **55** | **1** | **15.00 (0.00) — genuinely fires, at zero measured cost** |
+| **55 (final)** | **1** | **15.00 (0.00) — genuinely fires, at zero measured cost** |
 | 65 | 18 | 14.67 (0.29) — fires much more often, and starts costing real games |
 | 80 | 243 | 13.00 (0.00) — fires recklessly; even the purely greedy `max_damage` bots start winning |
 
-30, 50, and 55 are indistinguishable by win rate alone — all three score a clean 15.00 — which is exactly the trap: only the usage count shows that 30 and 50 aren't "safe defaults," they're a disabled feature. Past 55, usage climbs quickly and starts trading away real games, concentrated against `simple-uber`/`simple-uu` (the two opponents in the ladder that actually punish an overcommitted setup turn). 55 is the value where the mechanism is confirmed active at zero measured cost — the earliest point in this scan that isn't either silently broken or measurably worse.
+30, 50, and 55 are indistinguishable by win rate alone — all three score a clean 15.00 — which is exactly the trap: only the usage count shows that 30 and 50 aren't "safe defaults," they're a disabled feature. Past 55, usage climbs quickly and starts trading away real games, concentrated against `simple-uber`/`simple-uu` (the two opponents in the ladder that actually punish an overcommitted setup turn). A later, narrower retest around 55 (15→15.00, 45→14.67) confirms the same sweet spot holds up.
 
-Having settled on that configuration, a second, later round re-tested it against nearby alternatives — each row below reruns the final configuration (§2.4) with exactly one change, 3 times, reported as mean ± stdev, with a difference only counting as real once it clearly clears the noise floor (0.29 here, well under the smallest real difference of 0.33). Full data for both rounds is in `analysis/results/`, per-config detail in `Ablation_Study.md`.
+**`SWITCH_DEFENSE_WEIGHT`: confirmed insensitive under three different formulas, not just once.** Switch scoring's defense term was itself buggy early on — `_switch_score`'s `defense_risk` accidentally computed the *candidate's own offensive* type multiplier against the opponent, not the risk of switching the candidate in — so the first screening round's "30/60/90 all tied" reading rested on a defense term that wasn't measuring defense at all, and wasn't trustworthy. After fixing that formula, a dedicated retest (issue #8) found the same tie holds up anyway: 30/60/90 all averaged 14.00/15 across 3 repeats, with 90 landing at zero stdev — more stable than that round's own reference configuration. The current, clean data confirms the tie a third time, now at a perfect 15.00/15 for all three:
 
-![Ablation: mean bots beaten per config, 3 repeats each](analysis/figures/ablation_mean_beaten.png)
+| `SWITCH_DEFENSE_WEIGHT` | Mean beaten / 15 | Stdev |
+|---|---|---|
+| 30 | 15.00 | 0.00 |
+| **60 (final)** | **15.00** | **0.00** |
+| 90 | 15.00 | 0.00 |
 
-| Configuration | Change from final | Mean beaten / 15 | Stdev |
-|---|---|---|---|
-| **Final configuration** | none | **15.00** | 0.00 |
-| No hard-KO | hard-KO rule disabled | 14.67 | 0.29 |
-| No opening script | opening script disabled | 14.33 | 0.29 |
-| Setup weight 15 | `SETUP_BOOST_WEIGHT` 55→15 | 15.00 | 0.00 |
-| Setup weight 45 | `SETUP_BOOST_WEIGHT` 55→45 | 14.67 | 0.29 |
-| Switch defense weight 30/90 | `SWITCH_DEFENSE_WEIGHT` 60→30/90 | 15.00 / 15.00 | 0.00 / 0.00 |
-| Switch cost 0/50 | `SWITCH_COST` 25→0/50 | 15.00 / 15.00 | 0.00 / 0.00 |
+The same conclusion surviving two independent formula rewrites and a measurement-tooling fix (§4.3) is the actual evidence here, not any single round's numbers. 60 stays the final value not because ablation picked it out — it can't, the data is tied — but because it sits deliberately mid-range rather than at either tested extreme: enough to still pull a key sweeper out of an avoidable follow-up hit, without becoming cautious enough to contradict a playstyle built around staying in and attacking (§2.3).
 
-**Finding 1 — only two modules produce a reproducible, real score difference when removed.** Disabling the hard-KO rule costs 0.33 bots beaten, disabling the opening script costs 0.67 — both several times the 0.29 noise floor. Per-bot detail confirms these are genuine in-battle losses, not timeouts, concentrated against `simple-uber` (`poke_env`'s built-in `SimpleHeuristicsPlayer`, which genuinely sets hazards/boosts/switches, unlike the purely greedy `max_damage` bot).
+**`SWITCH_COST`: also insensitive, though its early instability had a different cause.** Unlike the other two weights, `SWITCH_COST`'s apparent "optimal value" flip-flopped across early rounds — a symptom, not a separate bug, of the same ablation-tooling connection-leak issue detailed in §4.3, which inflated timeout rates unevenly enough to make different values look best from one run to the next. The current, clean data resolves that: 0/25/50 all tie at a perfect 15.00/15.
 
-**Finding 2 — weight parameters are largely insensitive across this second, narrower range.** Every weight tested ties the final configuration except `SETUP_BOOST_WEIGHT=45`, which costs 0.33 bots beaten — right at the noise floor, and consistent with the sharper drop-off already found at 65/80 above.
+| `SWITCH_COST` | Mean beaten / 15 | Stdev |
+|---|---|---|
+| 0 | 15.00 | 0.00 |
+| **25 (final)** | **15.00** | **0.00** |
+| 50 | 15.00 | 0.00 |
 
-**What this means for the final configuration.** Both the hard-KO rule and the opening script stay enabled: each is one of only two things in the whole system with a measured, reproducible cost if removed. `SWITCH_DEFENSE_WEIGHT` and `SWITCH_COST` are tied against every alternative tested here, so this second round's data alone can't decide between 60/25 and the alternatives — the choice among tied values is made by falling back on the team's own Hyper Offense identity (§2.3). `SWITCH_COST=25` keeps the framework biased toward staying in and attacking rather than pivoting at the first sign of risk, which a stall team could afford but a speed-sweep team, whose plan is to keep applying tempo, cannot. `SWITCH_DEFENSE_WEIGHT=60` sits deliberately mid-range rather than at either tested extreme — enough to still pull a key sweeper out of an avoidable follow-up hit, without becoming cautious enough to contradict the team's own playstyle. This reasoning matters more, not less, once the opponent isn't the fixed bot ladder: an unknown class-competition opponent may punish both an undervalued setup turn and over-cautious switching, so bot-ladder data can't break these ties at all — only what the team is built to do can. This is what §2.4's parameter table actually reflects.
+As with `SWITCH_DEFENSE_WEIGHT`, the value is a design choice rather than an empirical one: `SWITCH_COST=25` keeps the framework biased toward staying in and attacking rather than pivoting at the first sign of risk, which a stall team could afford but a speed-sweep team, whose plan is to keep applying tempo, cannot (§2.3). This reasoning for both switch weights matters more, not less, once the opponent isn't the fixed bot ladder: an unknown class-competition opponent may punish over-cautious switching in a way this bot ladder never tests, so bot-ladder data alone was never going to be able to make this choice.
 
 ## 4. Reflections
 
