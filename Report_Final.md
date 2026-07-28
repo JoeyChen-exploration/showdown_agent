@@ -1,0 +1,171 @@
+# An Expert System for Gen9 Ubers Pokémon Battling
+
+## 1. Introduction
+
+Frankly, before starting this project I had never played or watched competitive Pokémon, so my domain knowledge was close to zero. I have played strategy card games like Hearthstone before, though, and the question of "how much do I know about my opponent's options, and how should I allocate resources under that uncertainty" felt structurally similar to what a Pokémon battle asks every turn. I open with this not as a disclaimer, but because it directly shaped the methodology: with no domain intuition to fall back on, the whole design had to start from systematic, verifiable research rather than guessing from experience. This also motivates adopting an expert-system architecture [1][8] — an inference engine applying heuristic rules from a knowledge base, with a clear explanation facility — which keeps every turn's decision path traceable and auditable.
+
+That research identified eight core factors a battle decision system has to handle:
+
+1. **Type effectiveness** — the damage-multiplier relationships between types; the baseline for nearly every move-choice and switch-safety decision.
+2. **Move secondary effects** — a move is more than its power number: status-infliction chance, stat changes, field effects, recoil, and accuracy together decide what it's actually for.
+3. **Held items** — Choice items (flexibility traded for power), permanent transformation items, and one-time defensive items each add a distinct rule the decision logic must account for.
+4. **Terastallization** — Gen9's one-time, irreversible type-switch mechanic, the single largest source of mid-battle complexity this generation.
+5. **Tier system (Ubers/OU/UU/RU/NU)** — caps how strong the opponent's Pokémon can be per tier, and is the source of this task's five-tier opponent ladder.
+6. **Random teampreview lead order** — verified via `poke_env`'s source that all three opponent AI styles pick their lead uniformly at random, ruling out any "predict their fixed opener" strategy in favor of general runtime rules.
+7. **Speed/turn order** — who moves first decides whose move resolves first, directly affecting whether a setup move gets to matter or retreating is safer; with the opponent's real stats unknown, we conservatively assume their maximum possible speed.
+8. **Simultaneous move selection** — both sides pick a move without seeing the other's choice; only speed/priority decide who actually goes first once both are submitted. Unlike Hearthstone's strictly sequential turns, we never get to react to what the opponent just did — every decision has to hedge against what they *might* do, not respond to what they *did*.
+
+These eight factors are the foundation the rest of the design is argued from.
+
+## 2. Design
+
+The whole decision system is organised around the classic three-part expert-system architecture [1][8]. Concretely, in this codebase: the **Knowledge Base** is the hard-coded Pokémon mechanics (type effectiveness, STAB multiplier, stat-stage multipliers, the speed formula, etc. — §2.1/2.2) plus a set of weight constants calibrated by ablation (§2.4's parameter table); the **Inference Engine** is `_choose_move`'s four-layer cascade, which applies the knowledge base's facts and weights to the current battle state to decide this turn's action (§2.4); the **Explanation Facility** is `self.decision_log`, which records, every turn, a snapshot of both sides (species/HP/status), the candidate actions considered, the one chosen, and its score — so any decision can be traced back to *what the system saw and why it chose that*, rather than a black-box result. The rest of this section elaborates each component in turn.
+
+### 2.1 Task-Rule Analysis
+
+**The five opponent tiers constrain only the opponent, not us** (factor 5). `bots/teams/` has five opponent strength tiers (uber/ou/uu/ru/nu); our own team format is limited only by `battle_format="gen9ubers"` — the least restrictive singles tier, permitting nearly any Pokémon including Uber-tier ones. Since the same team faces all five tiers and the tier system places no further restriction on our side, the rational choice is direct: **draft from the strongest legal tier (Uber)** rather than self-handicapping for "fairness." This is the reason the team is built almost entirely from Uber-tier Pokémon (Kyogre, Koraidon, Zacian-Crowned, Eternatus, Arceus-Ghost) — a conclusion drawn from the rules' structure, not from "these Pokémon are strong" as a matter of taste.
+
+**What `poke_env` exposes bounds what the methodology can rely on.** `teampreview_opponent_team` reveals the opponent's full roster during teampreview (before they've actually sent anyone out); `battle.can_tera`/`battle.used_tera` expose whether Tera is still available. Working out exactly what information the framework provides — rather than assuming — is the same discipline as the teampreview-randomness finding above: design boundaries have to be confirmed against source/docs, not guessed.
+
+### 2.2 Opponent Analysis: From Teambuilder to a Threat Table
+
+Every one of the 15 bots' teams (30 Pokémon total) was entered into the [Showdown Teambuilder](https://play.pokemonshowdown.com/teambuilder) [4] to check each Pokémon's actual type, ability, held item, and full move effects — not just base power. Only patterns that recurred across multiple strength tiers were treated as generalisable design input; single-bot quirks were not, which is also why the final design never hard-codes a response to a specific opponent (consistent with teampreview's uniform randomness, §1). These five threats are factors 2 and 3 above, as they actually show up in this specific opponent ladder:
+
+| Threat | Concrete effect |
+|---|---|
+| Paralysis moves (e.g. Cobalion/Rotom-Wash/Slowbro, 3 tiers) | Speed halved; 25% chance to be fully paralysed |
+| Priority moves (e.g. Sucker Punch/Extreme Speed/Bullet Punch, multiple tiers) | Move priority overrides speed — the opponent moves first regardless of our stats |
+| Choice items (e.g. Darkrai/Metagross/Zapdos-Galar, 3 tiers) | Move locked after first use until switching out |
+| Entry hazards (Stealth Rock/Spikes, almost every tier) | Damage on every switch-in, compounding with stacked layers |
+| Knock Off (almost every tier) | Permanently strips the target's item, with a same-turn power bonus |
+
+These five threats split cleanly by *when* they can be addressed. Paralysis and priority both bear on "who moves first this turn" — a judgement that has to be re-made every turn from the current battle state, so it can only live in runtime scoring logic (§2.4). Choice-locking, hazards, and Knock Off are the opposite: their cost accrues over many turns (an information disadvantage, chip damage, reduced firepower once an item is gone), and the moment that actually determines their outcome is team/item selection, not any single turn's score — runtime logic has no way to price in "damage that accumulates across turns" (§2.3). That split is itself part of the argument for a fast team: since these three cumulative threats can't be handled algorithmically at all, a slower, attrition-based playstyle would be far more exposed to them than a playstyle that ends the game before they can compound.
+
+### 2.3 Team Composition: A Hyper Offense Roster
+
+The team was built with the [pokeaimmd.com Ubers team builder](https://www.pokeaimmd.com/ubers) [6] around a **Hyper Offense** identity — the playstyle that best matches a system built on general, non-opponent-specific rules, for two concrete reasons. First, Hyper Offense is fast (factor 7) and hits hard, so its value is realised almost entirely within the current turn rather than depending on a payoff several turns later — which matches exactly what §2.4's single-turn scoring architecture can evaluate, rather than asking it to reason about value it structurally cannot compute. Second, raw, high, direct damage is easier to translate into the scoring formula's numbers (e.g. `_power_score`, which folds a move's type-effectiveness multiplier [factor 1], STAB, and base power into one score) than a stall team's slow-building resource advantage would be, and it tolerates more scoring error: an imperfect choice this turn is more survivable when your own output is already high than when the whole plan depends on no single turn going wrong.
+
+| Pokémon | Role |
+|---|---|
+| Ribombee (Focus Sash; Sticky Web / Stun Spore / Moonblast / U-turn) | Lead support: hazards, opponent speed control, one guaranteed-survival turn |
+| Kyogre (Choice Band, Drizzle; Waterfall / Body Slam / Earthquake / Tera Blast) | Rain-boosted physical wallbreaker, locked into one move at a time |
+| Koraidon (Loaded Dice; Swords Dance / Scale Shot / Flare Blitz / Taunt) | Fast setup sweeper |
+| Zacian-Crowned (Rusted Sword; Swords Dance / Close Combat / Behemoth Blade / Wild Charge) | Fast setup sweeper |
+| Eternatus (Power Herb; Sludge Bomb / Meteor Beam / Dynamax Cannon / Fire Blast) | Special wallbreaker, one-shot nuke via Power Herb |
+| Arceus-Ghost (Spooky Plate, Multitype; Judgment / Aura Sphere / Power Gem / Calm Mind) | Bulkier special closer, doubles as a pivot |
+
+Ribombee is the only Pokémon carrying opponent-speed-control (Sticky Web), tempo disruption (Stun Spore), and a risk-free opening turn (Focus Sash) together, which is why it leads and anchors the fixed opening script (§2.4).
+
+Team construction also had to make a call on the three cumulative threats from §2.2. Choice-locking gets **no runtime response** — Kyogre also carrying Choice Band is coincidental, not a mechanism (the code never reads the opponent's held item). Hazards likewise get no response — no Heavy-Duty Boots, no hazard removal — an acknowledged gap. Knock Off is the one threat actually neutralised at the roster level: Zacian-Crowned's Rusted Sword and Arceus-Ghost's Spooky Plate cannot legally be knocked off under Showdown's rules, and Eternatus's Power Herb is a one-time consumable that has already done its job before it could be stripped — three of six Pokémon are immune to Knock Off's real damage by construction, not by any in-battle judgement.
+
+### 2.4 Core Algorithm: if-else for the Opening, Greedy Scoring Everywhere Else
+
+![wche652 decision cascade](analysis/figures/decision_flow.png)
+
+*The four-layer decision cascade inside `_choose_move`: forced switch → fixed Ribombee opening (turns ≤2) → hard-KO short-circuit → general single-turn scoring fallback. Any layer that fires short-circuits the rest.*
+
+The system is built from two distinct styles of logic: **turns 1–2 use a fixed if-else script**, everything else uses **greedy scoring** — evaluate every legal action this turn and take the highest-scoring one, with no multi-turn lookahead. The final, ablation-confirmed parameters:
+
+| Parameter | Value | Meaning | Ablation result (§3.3) |
+|---|---|---|---|
+| Hard-KO short-circuit | on | Take a guaranteed KO immediately, bypassing scoring; also previews a Tera-assisted KO (factor 4 — used only for this one narrow purpose, not general Tera timing) | 15.00→14.67 when disabled — one of only two modules with a measurable effect |
+| Ribombee opening script | on | Fixed if-else for turns ≤2 | 15.00→14.33 when disabled — the other module with a measurable effect |
+| `SETUP_BOOST_WEIGHT` | 55.0 | Score per stat-stage from a setup move | Calibrated up from 30; largely insensitive across the tested range |
+| `SWITCH_DEFENSE_WEIGHT` | 60.0 | Defensive-risk weight in switch scoring | Tested at 30/90 — both still perfect scores |
+| `SWITCH_COST` | 25 | Flat cost applied to any switch | Tested at 0/50 — both still perfect scores |
+| `FASTER_/SLOWER_SURVIVAL_THRESHOLD` | 0.9 / 0.6 | Tolerance for a setup move when we move first / when the opponent does | Raised from 0.5/0.35 — the setup-safety check didn't actually fire below this (issue #7) |
+
+**Why if-else for the opening.** Turns 1–2 have no revealed information yet (items, EVs, Tera type are all unknown), which is exactly where a general scoring framework is most likely to misjudge from insufficient data. Sticky Web on turn 1 (slowing the opponent's future switch-ins), branching into Stun Spore or U-turn on turn 2, is a fixed combination already confirmed to hold up under uncertainty — the ablation cost of disabling it (15.00→14.33) is the direct evidence that this specific combo earns its place as a script rather than being recomputed from scratch every game.
+
+**Why greedy scoring everywhere else.** Mid-to-late-game states are too numerous to hand-enumerate without producing rules that misfire on unanticipated situations — switch evaluation is the clearest case: whether a candidate that "hits hard but takes a big hit back" should out-rank one that's "safe but weak" is a continuous trade-off across HP and type multipliers, not something a discrete if-else branch can express without edge cases, which is why switch scoring subtracts a defensive-risk term from an offensive one (`best move's power score − incoming-damage multiplier × defense weight`) rather than branching on cases. This framework also deliberately skips multi-turn search/minimax: minimax's value rests on the opponent optimising against our moves — the "single-agent vs. multi-agent" distinction in Russell & Norvig's task-environment taxonomy [9] — but `poke_env`'s three built-in AI styles, verified from source, never adapt to our play, so lookahead buys nothing beyond added complexity and lost interpretability. The same source check confirms opponent leads are uniformly random (factor 6) and that items/EVs/Tera are unknown until revealed — exactly the kind of information-incomplete, combinatorially large space greedy scoring is built for, the mirror image of the opening's "also incomplete, but few enough branches to enumerate by hand." Both sides also pick a move simultaneously each turn without seeing the other's choice (factor 8), so there is no "wait and see, then react" option — only hedging against a threat in this turn's score. This "the opponent doesn't play adaptively" premise holds for the fixed bot ladder, but is unverified for a future class-competition setting where opponents are other students' agents that might counter-play, and where the rules only reveal moves the opponent has already used, not their full movepool.
+
+Two of §2.2's threats get a concrete runtime rule inside this framework. A Pokémon's *effective* speed is halved under paralysis before comparing who moves first, so a slowed target isn't mistaken for "still faster, so setup is safe." Separately, before comparing raw speed at all, the framework checks whether the opponent has already revealed a priority move this battle (e.g. Sucker Punch) — if so, they're assumed to move first regardless of stats, since Gen9 priority brackets override speed outright, and skipping this check would misjudge "I'm numerically faster" as "setup is safe" when it isn't.
+
+## 3. Evaluation
+
+### 3.1 Methodology: A Single Grading Run vs. Our Own Tuning Confidence
+
+The assignment's win condition is simple: best-of-three per bot, >0.5 win rate counts as a win, and the final mark is a function of total bots beaten (`expert_main.py`'s `assign_marks`). Critically, **the official grading run almost certainly happens once** — whatever that single run produces (move-hit variance, crits, AI randomness included) is the final score, with no averaging.
+
+During development we found that the same code, rerun against the same fixed ladder, produces different results (13/15 one run, 14/15 the next); two configurations differing by one parameter can tie on total score while losing to different bots. A single "win" is therefore not reliable evidence for comparing two designs — it may just be luck, the same lesson system-benchmarking methodology draws about measurement bias producing data indistinguishable from a real, stable effect [10] (§4.5 has a case where we hit this ourselves). To make our own tuning decisions trustworthy, `analysis/run_ablation.py` was extended to rerun a full 15-bot ladder multiple times per configuration and report the mean and standard deviation of bots beaten, rather than trusting one run; a difference only counts as real once it clearly exceeds the noise observed across repeats.
+
+To be explicit about what this buys us: **this multi-run discipline only applies to our own internal tuning — it cannot change how the actual submission is graded**, which still runs once and still carries that run's luck. What it does provide is a better-grounded belief that our submitted parameters are genuinely stronger on average, raising the odds of a good outcome on grading day — and it directly motivated a design goal of reducing variance itself (e.g. the hard-KO rule shortens games and reduces the chance a match gets derailed by randomness, §2.4) rather than only chasing it after the fact.
+
+### 3.2 Isolating Team Strength from Decision Logic
+
+To satisfy the requirement that a good ranking has to be shown to come from the *method*, not just a strong roster, we ran a controlled comparison early on: keep the current team fixed, but replace `_choose_move` with the framework's built-in random move selection. This isolates team strength from decision logic.
+
+Result: **rank #15, mark 1.0, 1/15 bots beaten** — only `random-ru` (0.67 win rate; every other matchup below 0.5). A strong roster with random move selection is close to a guaranteed loss; switching to our rule system with the same, unchanged team raised that to 14–15/15 (§3.3's `baseline`). That jump is the quantitative evidence that the win-rate improvement comes from the decision logic, not simply "the roster was already strong."
+
+### 3.3 Ablation: Which Rules and Weights Actually Matter
+
+Decision logic went through three iterations (v1→v2→v3); each concluded with a full ablation pass, first as a single cheap screening run, then confirmed with 3 repeats per configuration (mean ± stdev) once a candidate looked promising — full data in `analysis/results/`, per-config detail in `Ablation_Study.md`. `v1`'s baseline (14.33/15) came from six correctness fixes (Judgment's typing, Scale Shot's multi-hit damage, switch-scoring direction, among others); `v2` added anti-stall Taunt logic, a teampreview counter table, and delayed hazard-value scoring without moving the baseline, since all three are edge-case mechanisms the default matchups rarely depend on. The current, valid data is `v3`:
+
+![Ablation: mean bots beaten per config, 3 repeats each](analysis/figures/ablation_mean_beaten.png)
+
+| Configuration | Change | Mean beaten / 15 | Stdev |
+|---|---|---|---|
+| **`baseline`** | none | **15.00** | 0.00 |
+| `no_hard_ko` | hard-KO rule disabled | 14.67 | 0.29 |
+| `no_opening_script` | opening script disabled | 14.33 | 0.29 |
+| `setup_weight_15` | setup weight 30→15 | 15.00 | 0.00 |
+| `setup_weight_45` | setup weight 30→45 | 14.67 | 0.29 |
+| `switch_defense_weight_30/90` | switch defense weight 60→30/90 | 15.00 / 15.00 | 0.00 / 0.00 |
+| `switch_cost_0/50` | switch cost 25→0/50 | 15.00 / 15.00 | 0.00 / 0.00 |
+
+Three findings. First, `baseline` rose from v1/v2's 14.33 to a clean 15.00 (stdev 0 across 3 repeats) — not because v3's decision logic itself got stronger (the Tera-assisted-KO addition barely moves the total, §4.5), but because a bug in our own ablation tooling (stale connections accumulating across repeats in one process, inflating one bot's timeout rate) was fixed; comparing all three versions side by side is what makes that traceable, rather than misreading v3's table alone as decision-logic improvement. Second, only two modules produce a reproducible, real score difference when removed: the hard-KO rule and the opening script (14.67 and 14.33/15) — checking per-bot detail confirms these are genuine in-battle losses, not timeouts, concentrated against `simple-uber` (`poke_env`'s built-in `SimpleHeuristicsPlayer`, which genuinely sets hazards/boosts/switches, unlike the purely greedy `max_damage` bot). Third, weight parameters are largely insensitive across the tested range — only `SETUP_BOOST_WEIGHT=45` costs anything measurable — confirming that v1/v2's apparent "optimal direction keeps flipping" instability was largely an artifact of the same timeout noise, not a real property of the weights.
+
+## 4. Reflections
+
+### 4.1 Where the Difficulty Actually Was
+
+This assignment isn't hard to *implement* — `_choose_move` is, at bottom, a handful of functions across two files. The real difficulty was deciding, after each bug, whether it was **encoded knowledge that was wrong** or **irreducible environmental uncertainty** — the same distinction raised in the introduction between an expert system's failure mode and an ML system's. Three properties of the task made this hard on its own terms, independent of implementation: opponent information is always incomplete outside teampreview, forcing the knowledge base to encode conservative defaults (`_max_speed_estimate` always assumes maximum investment) rather than exact values; the evaluation environment is non-deterministic (hit/crit/status rolls plus random leads), so "did this change actually help" needed the whole multi-run methodology of §3.1 rather than a single answer; and correctness rests entirely on the human — there's no training data to catch a mistake, and several bugs were only found by systematic audit rather than a runtime error, because the rule was syntactically fine and only semantically wrong.
+
+| Version / issue | What went wrong | Lesson |
+|---|---|---|
+| v1 | `_switch_score` had its offensive/defensive terms reversed — a genuine misunderstanding at design time, not a typo, found by working backward from anomalous losses | Knowledge-to-code translation errors are the characteristic expert-system failure mode |
+| v2 | Assumed `max_damage-uber`'s timeouts came from stat-boost stalling; built two features around that assumption before reading `bots/max_damage.py` and finding it only ever picks the highest-power move | Verify against the opponent's actual implementation before designing a fix — don't guess from "typical" play |
+| v3 (Terastallize) | Code review caught two bugs: Judgment's post-Tera type was resolved backwards, and `Pokemon.tera_type` reflects a *revealed* Tera type, not our own pre-set one | Confirms v1's original call to defer Terastallize ("too many variables, too easy to get wrong") was correct in hindsight |
+| Priority fix (#15/16) | Logic verified correct (unit test + code review), but ablation found a real, reproducible cost with no traceable direct cause; confirmed via source that seeded replay can't isolate it — the protocol never exposes a seed, and even if it did, a diverging decision legitimately diverges the RNG stream from that point on | Not every causal chain resolves, even when specifically investigated |
+
+The nature of the difficulty shifted over time — from translation errors (v1), to undertested assumptions (v2), to third-party framework semantics and unreliable measurement tools (v3 onward), to causal questions that stay open even under direct investigation. That progression is itself the clearest evidence of how our understanding of "expert agent" evolved: knowledge correctness was the obvious difficulty at first, but the environment the knowledge runs in, and how to verify it's correct, turned out to be just as unavoidable a part of the design problem.
+
+### 4.2 The Randomness Behind the Numbers
+
+Evaluation leans on "noise" and "variance" repeatedly; the underlying causes split into three layers. The **root cause** is the battle engine itself — hit/crit/status rolls, and critically, all three opponent AI styles picking their lead uniformly at random (confirmed from source, §1) — a source of variance that no sample size averages away, only smooths. **Sample size** is not itself a source of randomness but our ability to average out the first layer: official grading is one Bo3 per bot, and even our own screening runs were single 15-bot passes, so one unlucky game can flip a bot from "beaten" to "not," which is exactly why §3.1's multi-run methodology exists. The **90-second timeout** is a threshold effect that can fold continuous randomness into a binary win/loss label, but only for the rare match that's inherently long — most battles resolve in 15–30 turns, far short of the wall.
+
+This is a structural limit of a rule-based expert system operating in a non-deterministic environment: the rules themselves can be fully deterministic and traceable, but the environment they run in is not, so correctness can only ever be argued statistically, never proven from one run — which is exactly why §4.3 shows that even "stable across many reruns" is not, on its own, sufficient evidence.
+
+### 4.3 A Structural Conclusion That Turned Out to Be a Tooling Bug
+
+Across several ablation rounds, `max_damage-uber` looked like a stable loss: `baseline`'s win rate against it reproduced the same number (~1/3, stdev 0.58) across roughly seven or eight unrelated code changes. That stability looked like the strongest possible evidence, so — following our own "don't trust a single run" discipline — we concluded it was a structural limitation of single-turn greedy scoring rooted in §4.2's randomness, and stopped investing in it.
+
+That conclusion was wrong, and wrong in an interesting place: not the decision logic, but **our own ablation script**. To run multiple repeats in one process, it incremented each repeat's bot usernames to avoid collisions — but Showdown's protocol replaces an old session on a same-name reconnect, so incrementing usernames let stale connections accumulate for the life of the process, unlike a real grading run's clean, fresh-process-per-run behaviour. The "stable timeout" we observed was stable **tooling side-effect**, not a property of the system under test; switching to one fresh process per repeat, the same configuration ran clean across 27 independent repeats with zero timeouts.
+
+The methodological lesson matters more than the fix: reproducibility across reruns only rules out random noise, not a *biased but deterministic* measurement tool, which produces data indistinguishable from a real, stable effect [10] — a distinct discipline from "never trust a single run," and one this project only learned by going back to the grading harness's own source rather than running yet another ablation.
+
+### 4.4 Greedy Scoring vs. if-else, in Hindsight
+
+This comparison doesn't need to be hypothetical — both styles run inside our own system: the opening script (§2.4) is pure if-else/hardcode, everything else is greedy scoring. Measured against real ablation data (§3.3), the result cuts against the intuition that "the more sophisticated continuous framework should contribute more": the only two modules with a reproducible, real score impact are both hardcoded rules (the hard-KO short-circuit and the opening script), while greedy scoring's own weights are almost entirely insensitive across the tested range. The two styles aren't in competition — Russell & Norvig's determinism/stochasticity framing [9] (already used in §2.4) explains why: if-else wins where information is certain and the branch space is small enough to enumerate by hand (the opening, "can this KO"), where a decision is unambiguous once conditions are met; greedy scoring wins where information is incomplete and the space is too large to enumerate, at the cost of any single rule's precision — which is also why the weights are insensitive: the framework was built for coverage, not for any one number being exact. Both remain the same category of system underneath, though: the scoring formulas are just as hand-written as the if-else branches (the `_switch_score` direction bug lived in the scoring framework, not the hardcoded script), and both are equally capable of the "knowledge encoded wrong" failure mode regardless of how long the reasoning chain is. The actual takeaway is to match the tool to how certain and enumerable the sub-problem is, not to assume a general framework is inherently superior to a hardcoded rule.
+
+## References
+
+[1] Wikipedia. *Expert system*. https://en.wikipedia.org/wiki/Expert_system
+
+[2] hsahovic et al. *poke_env* (GitHub repository). https://github.com/hsahovic/poke_env
+
+[3] Smogon / Pokémon Showdown. *pokemon-showdown* (GitHub repository). https://github.com/smogon/pokemon-showdown
+
+[4] Pokémon Showdown. *Teambuilder*. https://play.pokemonshowdown.com/teambuilder
+
+[5] Smogon. *Gen 9 Ubers format rules*. https://www.smogon.com/dex/sv/formats/uber/
+
+[6] pokeAImmd. *Ubers Team Builder*. https://www.pokeaimmd.com/ubers
+
+[7] UoA-CARES. *showdown_agent* (GitHub repository, course starter code). https://github.com/UoA-CARES/showdown_agent
+
+[8] Buchanan, B. G., & Shortliffe, E. H. (1984). *Rule-Based Expert Systems: The MYCIN Experiments of the Stanford Heuristic Programming Project*. Addison-Wesley.
+
+[9] Russell, S. J., & Norvig, P. *Artificial Intelligence: A Modern Approach*.
+
+[10] Mytkowicz, T., Diwan, A., Hauswirth, M., & Sweeney, P. F. (2009). *Producing Wrong Data Without Doing Anything Obviously Wrong!* ASPLOS 2009.
