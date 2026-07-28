@@ -3,7 +3,10 @@
 > 这份文档不是报告本身，是把已经记录的 log 按 [AssessmentDescription.md](AssessmentDescription.md)
 > 要求的三个部分（Design / Evaluation / Reflections）分类整理，标出"已经有什么素材"和"还缺什么"，
 > 真正动笔写报告的时候直接从这里找对应的文件/记录，不用重新翻聊天记录回忆。
-> 实际报告草稿（英文，正在写）在 [Report_Draft.md](Report_Daft.md)。
+> 中文工作草稿在 [Report_Draft.md](Report_Draft.md)（内容/证据的真实来源，先在这里理顺逻辑）；
+> **2026-07-28 新增** [Report_Final.md](Report_Final.md) 是从 Report_Draft.md 翻译+压缩出来的
+> 英文最终稿（提交用的版本，单栏 11pt 6 页预算），正在迭代，篇幅还没完全砍进预算——具体多少
+> 见 Report_Final.md 自己的字数记录（写作过程中留在 commit message 里，不在这个文件重复记）。
 
 ## 写作规范：代码引用必须自解释（2026-07-27）
 
