@@ -84,7 +84,7 @@ def _resolve_showdown_dir() -> Path:
     )
     if configured:
         return Path(configured).expanduser().resolve()
-    return (Path.home() / "compsys726" / "pokemon-showdown").resolve()
+    return (Path.home() / "workspace" / "pokemon-showdown").resolve()
 
 
 def _start_showdown_server(showdown_dir: Path):
